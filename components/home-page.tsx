@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DiscordLogoIcon } from "@radix-ui/react-icons";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronRightIcon } from "lucide-react";
 
 export function HomePageComponent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -53,7 +53,9 @@ export function HomePageComponent() {
         <div className="container flex h-14 max-w-screen-2xl items-center">
           <div className="mr-4 hidden md:flex">
             <Link className="mr-6 flex items-center space-x-2" href="/">
-              <span className="hidden font-bold sm:inline-block">WebStore</span>
+              <span className="hidden font-bold sm:inline-block">
+                Esh Market
+              </span>
             </Link>
           </div>
           <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
@@ -87,7 +89,7 @@ export function HomePageComponent() {
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                  Welcome to WebStore
+                  Welcome to Erzy.sh Market
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
                   Discover amazing products at unbeatable prices.
@@ -129,7 +131,10 @@ export function HomePageComponent() {
                       Rp{product.price.money / 1000}k / {product.price.dl} DL
                     </span>
                     <Button asChild>
-                      <Link href={`/product/buy/${product._id}`}>Purchase</Link>
+                      <Link href={`/product/buy/${product._id}`}>
+                        Learn More{" "}
+                        <ChevronRightIcon className="ml-2 scale-75" />
+                      </Link>
                     </Button>
                   </CardFooter>
                 </Card>
