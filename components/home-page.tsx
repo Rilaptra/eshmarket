@@ -1,27 +1,50 @@
-'use client'
-
-import { useState } from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { DiscordLogoIcon } from '@radix-ui/react-icons'
-import { ChevronDown } from 'lucide-react'
-
-// Mock data for products
-const products = [
-  { id: 1, title: "Product 1", description: "This is a long description for product 1 that will be truncated.", price: 19.99 },
-  { id: 2, title: "Product 2", description: "Another long description for product 2 that needs to be cut off.", price: 29.99 },
-  { id: 3, title: "Product 3", description: "Yet another long description for product 3 that we'll shorten.", price: 39.99 },
-]
+"use client";
+import { Product } from "@/lib/interfaces";
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { DiscordLogoIcon } from "@radix-ui/react-icons";
+import { ChevronDown } from "lucide-react";
 
 export function HomePageComponent() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  // Fetch products from an API endpoint
+  useEffect(() => {
+    async function fetchProducts() {
+      const response = await fetch("/api/products");
+      if (!(response.status === 200)) {
+        console.error("Failed to fetch products");
+        return;
+      }
+      const { data } = await response.json();
+      setProducts(data);
+      // Sort products by price (lowest to highest)
+      data.sort((a: Product, b: Product) => a.price.money - b.price.money);
+      // Truncate product descriptions
+      data.forEach((product: Product) => {
+        if (product.description.length > 100) {
+          product.description = product.description.slice(0, 97) + "…";
+        }
+      });
+      // Set the sorted and truncated product data
+      setProducts(data);
+    }
+    fetchProducts();
+  }, []);
 
   const handleLogin = () => {
     // Simulating login process
-    setIsLoggedIn(true)
-  }
+    setIsLoggedIn(true);
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -73,8 +96,8 @@ export function HomePageComponent() {
               <Button
                 className="inline-flex items-center rounded-md text-sm font-medium"
                 onClick={() => {
-                  const productsSection = document.getElementById('products')
-                  productsSection?.scrollIntoView({ behavior: 'smooth' })
+                  const productsSection = document.getElementById("products");
+                  productsSection?.scrollIntoView({ behavior: "smooth" });
                 }}
               >
                 View Products
@@ -87,10 +110,12 @@ export function HomePageComponent() {
         {/* Products Section */}
         <section id="products" className="w-full py-12 md:py-24 lg:py-32">
           <div className="container px-4 md:px-6">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-8">Our Products</h2>
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-8">
+              Our Products
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
-                <Card key={product.id} className="flex flex-col justify-between">
+              {products.map((product, index) => (
+                <Card key={index} className="flex flex-col justify-between">
                   <CardHeader>
                     <CardTitle>{product.title}</CardTitle>
                   </CardHeader>
@@ -100,11 +125,11 @@ export function HomePageComponent() {
                     </p>
                   </CardContent>
                   <CardFooter className="flex justify-between">
-                    <span className="text-2xl font-bold">${product.price.toFixed(2)}</span>
+                    <span className="text-2xl font-bold">
+                      Rp{product.price.money / 1000}k / {product.price.dl} DL
+                    </span>
                     <Button asChild>
-                      <Link href={`/product/buy/${product.id}`}>
-                        Purchase
-                      </Link>
+                      <Link href={`/product/buy/${product._id}`}>Purchase</Link>
                     </Button>
                   </CardFooter>
                 </Card>
@@ -118,13 +143,14 @@ export function HomePageComponent() {
       <footer className="w-full py-6 bg-gray-100 dark:bg-gray-800">
         <div className="container px-4 md:px-6">
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-            © 2023 WebStore. All rights reserved.
+            © 2024 Erzy.sh Market. All rights reserved.
           </p>
           <p className="mt-2 text-center text-xs text-gray-500 dark:text-gray-400">
-            "The best way to predict the future is to create it." - Peter Drucker
+            "The best way to predict the future is to create it." - Peter
+            Drucker
           </p>
         </div>
       </footer>
     </div>
-  )
+  );
 }
