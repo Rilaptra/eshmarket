@@ -113,7 +113,7 @@ export function HomePageComponent() {
                 <ShoppingCart size={20} />
               </Button>
 
-              {userInfo ? (
+              {userInfo && isLoggedIn ? (
                 <div className="flex items-center space-x-3">
                   <span className="hidden md:inline text-sm font-medium">
                     {userInfo.username}
