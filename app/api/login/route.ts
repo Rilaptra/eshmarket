@@ -101,7 +101,9 @@ export async function GET(request: NextRequest) {
     // Simpan discordId ke cookie
     const discordId = encrypt(`${user.discord_id}`);
 
-    const response = NextResponse.redirect(new URL("/", request.url));
+    const response = NextResponse.redirect(
+      new URL("https://d401-47-252-47-61.ngrok-free.app")
+    );
 
     response.cookies.set("discord_id", discordId, {
       maxAge: 60 * 60 * 24 * 7,

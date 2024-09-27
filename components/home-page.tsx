@@ -12,74 +12,137 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DiscordLogoIcon } from "@radix-ui/react-icons";
-import { ChevronDown, ChevronRightIcon } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRightIcon,
+  Menu,
+  Search,
+  ShoppingCart,
+} from "lucide-react";
+import { IUser } from "@/lib/models/User";
+import { Input } from "./ui/input";
 
 export function HomePageComponent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  // Fetch products from an API endpoint
+  const [userInfo, setUserInfo] = useState<IUser | null>(null);
+
   useEffect(() => {
     async function fetchProducts() {
-      const response = await fetch("/api/products");
-      if (!(response.status === 200)) {
-        console.error("Failed to fetch products");
-        return;
-      }
-      const { data } = await response.json();
-      setProducts(data);
-      // Sort products by price (lowest to highest)
-      data.sort((a: Product, b: Product) => a.price.money - b.price.money);
-      // Truncate product descriptions
-      data.forEach((product: Product) => {
-        if (product.description.length > 100) {
-          product.description = product.description.slice(0, 97) + "…";
+      try {
+        const response = await fetch("/api/products");
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
         }
-      });
-      // Set the sorted and truncated product data
-      setProducts(data);
+        const { data } = await response.json();
+        const sortedProducts = data
+          .sort((a: Product, b: Product) => a.price.money - b.price.money)
+          .map((product: Product) => ({
+            ...product,
+            description:
+              product.description.length > 100
+                ? product.description.slice(0, 97) + "…"
+                : product.description,
+          }));
+        setProducts(sortedProducts);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
     }
-    fetchProducts();
 
-    // Login
+    async function fetchUser() {
+      try {
+        const response = await fetch(`/api/me`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+        const { data } = await response.json();
+        setUserInfo(data);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setIsLoggedIn(false);
+      }
+    }
+
+    fetchProducts();
+    fetchUser();
   }, []);
 
   const handleLogin = () => {
     window.location.href =
       "https://discord.com/oauth2/authorize?client_id=1238151974382338118&response_type=code&redirect_uri=https%3A%2F%2Fd401-47-252-47-61.ngrok-free.app%2Fapi%2Flogin&scope=identify+guilds";
-    setIsLoggedIn(true);
   };
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 max-w-screen-2xl items-center">
-          <div className="mr-4 hidden md:flex">
-            <Link className="mr-6 flex items-center space-x-2" href="/">
-              <span className="hidden font-bold sm:inline-block">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link href="/" className="flex items-center space-x-2">
+              <Image
+                src="/logo.svg"
+                alt="Esh Market Logo"
+                width={40}
+                height={40}
+              />
+              <span className="hidden text-xl font-bold text-primary md:inline-block">
                 Esh Market
               </span>
             </Link>
-          </div>
-          <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-            <nav className="flex items-center">
-              {isLoggedIn ? (
-                <Image
-                  src="/placeholder.svg?height=32&width=32"
-                  alt="User Avatar"
-                  width={32}
-                  height={32}
-                  className="rounded-full"
+
+            {/* Search Bar */}
+            <div className="hidden flex-1 max-w-md mx-4 lg:flex">
+              <div className="relative w-full">
+                <Input
+                  type="text"
+                  placeholder="Search products..."
+                  className="w-full pl-10 pr-4 py-2"
                 />
+                <Search
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={18}
+                />
+              </div>
+            </div>
+
+            {/* Navigation */}
+            <nav className="flex items-center space-x-4">
+              <Button variant="ghost" size="icon" className="hidden md:flex">
+                <ShoppingCart size={20} />
+              </Button>
+
+              {userInfo ? (
+                <div className="flex items-center space-x-3">
+                  <span className="hidden md:inline text-sm font-medium">
+                    {userInfo.username}
+                  </span>
+                  <Image
+                    src={
+                      userInfo.profileImage ||
+                      "https://i.ibb.co/2dh4YL3/nulprofile.jpg"
+                    }
+                    alt="User Avatar"
+                    width={32}
+                    height={32}
+                    className="rounded-full border-2 border-primary"
+                  />
+                </div>
               ) : (
                 <Button
                   onClick={handleLogin}
                   className="bg-[#5865F2] hover:bg-[#4752C4] text-white"
                 >
                   <DiscordLogoIcon className="mr-2 h-4 w-4" />
-                  Login with Discord
+                  <span className="hidden md:inline">Login</span>
                 </Button>
               )}
+
+              {/* Mobile Menu Button */}
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu size={20} />
+              </Button>
             </nav>
           </div>
         </div>
