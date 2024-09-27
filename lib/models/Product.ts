@@ -1,12 +1,24 @@
-import mongoose from 'mongoose'
+import mongoose, { Document, Model } from "mongoose";
 
-const ProductSchema = new mongoose.Schema({
+interface IProduct extends Document {
+  title: string;
+  description: string;
+  price: {
+    dl: string;
+    money: string;
+  };
+}
+
+const ProductSchema = new mongoose.Schema<IProduct>({
   title: String,
   description: String,
   price: {
-      dl: String,
-      money: String
+    dl: String,
+    money: String,
   },
-})
+});
 
-export default mongoose.models.Product || mongoose.model('Product', ProductSchema)
+const Product: Model<IProduct> =
+  mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
+
+export default Product;

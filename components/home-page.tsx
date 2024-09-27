@@ -39,10 +39,13 @@ export function HomePageComponent() {
       setProducts(data);
     }
     fetchProducts();
+
+    // Login
   }, []);
 
   const handleLogin = () => {
-    // Simulating login process
+    window.location.href =
+      "https://discord.com/oauth2/authorize?client_id=1238151974382338118&response_type=code&redirect_uri=https%3A%2F%2Fd401-47-252-47-61.ngrok-free.app%2Fapi%2Flogin&scope=identify+guilds";
     setIsLoggedIn(true);
   };
 
@@ -148,11 +151,11 @@ export function HomePageComponent() {
       <footer className="w-full py-6 bg-gray-100 dark:bg-gray-800">
         <div className="container px-4 md:px-6">
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-            © 2024 Erzy.sh Market. All rights reserved.
+            &copy; 2024 Erzy.sh Market. All rights reserved.
           </p>
           <p className="mt-2 text-center text-xs text-gray-500 dark:text-gray-400">
-            "The best way to predict the future is to create it." - Peter
-            Drucker
+            &quot;The best way to predict the future is to create it.&quot; -
+            Peter Drucker
           </p>
         </div>
       </footer>

@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
 export function LoadingAnimation() {
   return (
     <div

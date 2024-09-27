@@ -1,16 +1,36 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Model } from "mongoose";
 
-const UserSchema = new mongoose.Schema({
-    username: String,
-    profileImage: String,
-    role: String,
-    isAdmin: Boolean,
-    balance: {
-        dl: Number,
-        money: Number,
-    },
-    scriptBuyed: Array<String>,
-    chart: Array<Object>,
-})
+interface IUser extends Document {
+  username: string;
+  profileImage: string;
+  role: string;
+  isAdmin: boolean;
+  discord_id: string;
+  guilds?: Array<object> | null;
+  balance: {
+    dl: number;
+    money: number;
+  };
+  scriptBuyed: Array<string>;
+  chart: Array<object>;
+}
 
-export default mongoose.models.User || mongoose.model('User', UserSchema);
+const UserSchema = new mongoose.Schema<IUser>({
+  discord_id: String,
+  username: String,
+  profileImage: String,
+  role: String,
+  isAdmin: Boolean,
+  guilds: [Object],
+  balance: {
+    dl: Number,
+    money: Number,
+  },
+  scriptBuyed: [String],
+  chart: [Object],
+});
+
+const User: Model<IUser> =
+  mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
+
+export default User;

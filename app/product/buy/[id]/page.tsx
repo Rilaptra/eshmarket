@@ -1,5 +1,5 @@
 "use client";
-import { Product, User } from "@/lib/interfaces";
+import { Product } from "@/lib/interfaces";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,9 @@ import { ShoppingBasket } from "lucide-react";
 export default function ProductBuyPage() {
   const params = useParams();
   const [product, setProduct] = useState<Product | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  // const [user, setUser] = useState<User | null>(null);
 
-  function confirmPurchase() {}
+  // function confirmPurchase() {}
 
   useEffect(() => {
     const productId = params.id;
