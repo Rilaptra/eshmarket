@@ -1,27 +1,3 @@
-export interface Product {
-  _id: string;
-  title: string;
-  description: string;
-  price: {
-    money: number;
-    dl: number;
-  };
-}
-
-export interface User {
-  _id: string;
-  username: string;
-  profileImage: string;
-  role: string;
-  isAdmin: boolean;
-  balance: {
-    dl: number;
-    money: number;
-  };
-  scriptBuyed: Array<string>;
-  chart: Array<object>;
-}
-
 export interface DiscordOAuthToken {
   access_token: string;
   token_type: string;
@@ -51,7 +27,7 @@ export interface DiscordUser {
 }
 
 // Interface for a single guild object
-export interface PartialGuild {
+export interface DiscordPartialGuild {
   id: string; // The guild's unique snowflake ID
   name: string; // The name of the guild
   icon: string | null; // The guild's icon hash, or null if no icon
@@ -60,5 +36,11 @@ export interface PartialGuild {
   features: string[]; // Array of guild feature strings
 }
 
+export interface UserGuild {
+  id: string; // The guild's unique snowflake ID
+  name: string; // The name of the guild
+  owner: boolean; // Wether the user is the owner of guild
+}
+
 // Interface for the entire API response
-export type UserGuildsResponse = Array<PartialGuild>;
+export type UserGuildsResponse = Array<UserGuild>;

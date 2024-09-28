@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import { URLSearchParams } from "url";
-import { DiscordOAuthToken, DiscordUser } from "@/lib/interfaces";
+import {
+  DiscordOAuthToken,
+  DiscordUser,
+  DiscordPartialGuild,
+} from "@/lib/interfaces";
 import User from "@/lib/models/User";
 import { encrypt } from "@/lib/utils";
 
@@ -36,7 +40,10 @@ export async function GET(request: NextRequest) {
     );
 
     if (!tokenResponse.ok) {
-      throw new Error("Failed to fetch OAuth token");
+      return NextResponse.json(
+        { error: "Failed to fetch OAuth token" },
+        { status: 500 }
+      );
     }
 
     const oauthData: DiscordOAuthToken = await tokenResponse.json();
@@ -66,10 +73,16 @@ export async function GET(request: NextRequest) {
       throw new Error("Failed to fetch user guilds");
     }
 
-    const guildsData = await guildsResponse.json();
+    const guildsData: Array<DiscordPartialGuild> = await guildsResponse.json();
 
     // Menambahkan guilds ke userData
-    userData.guilds = guildsData;
+    userData.guilds = guildsData.map((guild) => {
+      return {
+        id: guild.id,
+        name: guild.name,
+        owner: guild.owner,
+      };
+    });
 
     // Check apakah user terdaftar di database MongoDB
     let user = await User.findOne({ discord_id: userData.id });
