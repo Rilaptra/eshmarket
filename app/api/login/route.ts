@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     client_secret: process.env.ClientSecret,
     code,
     grant_type: "authorization_code",
-    redirect_uri: "https://d401-47-252-47-61.ngrok-free.app/api/login",
+    redirect_uri: "https://475f-47-252-47-61.ngrok-free.app/api/login",
   });
 
   try {
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
     const discordId = encrypt(`${user.discord_id}`);
 
     const response = NextResponse.redirect(
-      new URL("https://d401-47-252-47-61.ngrok-free.app")
+      new URL("https://475f-47-252-47-61.ngrok-free.app")
     );
 
     response.cookies.set("discord_id", discordId, {
