@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,8 +26,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { MoreVertical, Edit, Trash2, Download, Plus } from "lucide-react";
+import {
+  MoreVertical,
+  Edit,
+  Trash2,
+  Download,
+  Plus,
+  Save,
+  X,
+  AlertTriangle,
+} from "lucide-react";
 import Link from "next/link";
+import { LoadingAnimation } from "@/components/loading-animation";
+
 export interface IProduct {
   _id: string;
   title: string;
@@ -44,20 +54,41 @@ export interface IProduct {
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<IProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [editingProduct, setEditingProduct] = useState<IProduct | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch products from API
     const fetchProducts = async () => {
-      const response = await fetch("/api/products");
-      const data = await response.json();
-      setProducts(data);
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetch("/api/products");
+        const data = await response.json();
+        console.log("Data fetched:", data);
+        setProducts(data.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setError("Failed to fetch products. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
     };
+
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    console.log("Updated products:", products);
+    if (products.length > 0) {
+      products.map((prod) => {
+        console.log("Product:", prod);
+      });
+    }
+  }, [products]);
 
   const handleEdit = (product: IProduct) => {
     setEditingProduct({ ...product });
@@ -123,11 +154,19 @@ export default function AdminProducts() {
     }
   };
 
+  if (isLoading) {
+    return <LoadingAnimation />;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Product Management</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array.isArray(products) && products.length > 0 ? (
+        {Array.isArray(products) ? (
           products.map((product) => (
             <Card
               key={product._id}
@@ -201,7 +240,7 @@ export default function AdminProducts() {
             </Card>
           ))
         ) : (
-          <div></div>
+          <div>No products available</div>
         )}
         {/* New Product Card */}
         <Link href="/product/add">
@@ -222,9 +261,12 @@ export default function AdminProducts() {
       </div>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] bg-white dark:bg-gray-800">
           <DialogHeader>
-            <DialogTitle>Edit Product</DialogTitle>
+            <DialogTitle className="flex items-center">
+              <Edit className="mr-2 h-5 w-5" />
+              Edit Product
+            </DialogTitle>
             <DialogDescription>
               Make changes to the product here. Click save when you are done.
             </DialogDescription>
@@ -260,7 +302,7 @@ export default function AdminProducts() {
                       description: e.target.value,
                     })
                   }
-                  className="col-span-3"
+                  className="col-span-3 resize-none"
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -324,18 +366,37 @@ export default function AdminProducts() {
                   Content
                 </Label>
                 <div className="col-span-3">
-                  <Input
+                  <Textarea
                     id="content"
+                    value={editingProduct.content}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        content: e.target.value,
+                      })
+                    }
+                    className="h-32 resize-none"
+                  />
+                  <Input
                     type="file"
                     onChange={handleFileUpload}
                     accept=".lua"
+                    className="mt-2"
                   />
                 </div>
               </div>
             </div>
           )}
           <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsEditDialogOpen(false)}
+            >
+              <X className="mr-2 h-4 w-4" />
+              Cancel
+            </Button>
             <Button type="submit" onClick={handleSaveChanges}>
+              <Save className="mr-2 h-4 w-4" />
               Save changes
             </Button>
           </DialogFooter>
@@ -343,9 +404,12 @@ export default function AdminProducts() {
       </Dialog>
 
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
+        <DialogContent className="bg-white dark:bg-gray-800">
           <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogTitle className="flex items-center text-red-600">
+              <AlertTriangle className="mr-2 h-5 w-5" />
+              Confirm Deletion
+            </DialogTitle>
             <DialogDescription>
               Are you sure you want to delete this product? This action cannot
               be undone.
@@ -356,9 +420,11 @@ export default function AdminProducts() {
               variant="outline"
               onClick={() => setIsDeleteDialogOpen(false)}
             >
+              <X className="mr-2 h-4 w-4" />
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleConfirmDelete}>
+              <Trash2 className="mr-2 h-4 w-4" />
               Delete
             </Button>
           </DialogFooter>

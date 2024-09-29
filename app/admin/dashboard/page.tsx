@@ -31,7 +31,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="my-3">
           <AdminGreeting userInfo={userInfo} />

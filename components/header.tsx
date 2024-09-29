@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -86,9 +87,8 @@ export function Header() {
   }, []);
 
   const handleLogin = () => {
-    alert("p");
     window.location.href =
-      "https://discord.com/oauth2/authorize?client_id=1238151974382338118&response_type=code&redirect_uri=https%3A%2F%2Fd401-47-252-47-61.ngrok-free.app%2Fapi%2Flogin&scope=identify+guilds";
+      "https://discord.com/oauth2/authorize?client_id=1238151974382338118&response_type=code&redirect_uri=https%3A%2F%2F475f-47-252-47-61.ngrok-free.app%2Fapi%2Flogin&scope=identify+guilds";
   };
 
   const handleLogout = async () => {

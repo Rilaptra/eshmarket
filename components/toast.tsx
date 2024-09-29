@@ -3,12 +3,11 @@ import { toast } from "@/hooks/use-toast";
 import { CheckCircle, XCircle } from "lucide-react";
 
 export function showToast(success: boolean, message: string) {
-  //   const { toast } = useToast();
-
   toast({
     variant: success ? "default" : "destructive",
     title: success ? "Success!" : "Error",
     description: message,
+    className: "bg-white",
     action: (
       <div className="flex items-center">
         {success ? (

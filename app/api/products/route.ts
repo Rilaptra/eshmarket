@@ -9,7 +9,7 @@ export async function GET() {
   return NextResponse.json({ status: 200, data: products });
 }
 
-export async function PUT(request: Request) {
+export async function POST(request: Request) {
   await dbConnect();
 
   const bodyObject: {

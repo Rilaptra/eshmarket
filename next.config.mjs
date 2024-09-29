@@ -22,6 +22,10 @@ const nextConfig = {
             value: "true",
           },
           {
+            key: "Allow",
+            value: "GET, POST, PUT, DELETE, OPTIONS",
+          },
+          {
             key: "Access-Control-Allow-Origin",
             value: "*",
           },

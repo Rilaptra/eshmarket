@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CircleDollarSign, Gem, Link2, PlusCircle } from "lucide-react";
 import { showToast } from "@/components/toast";
+import { Header } from "@/components/header";
 
 interface IProduct {
   title: string;
@@ -79,9 +80,9 @@ export default function AddProductPage() {
     }
 
     console.log(JSON.stringify(product));
-    // Send the data to /api/products with PUT method
+    // Send the data to /api/products with POST method
     fetch("/api/products", {
-      method: "PUT",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -115,10 +116,6 @@ export default function AddProductPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        {/* ... Header content ... */}
-      </header>
-
       <main className="flex-1 container mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl mb-12 text-center text-gray-800 dark:text-gray-100">
           Add New Product
