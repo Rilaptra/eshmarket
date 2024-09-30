@@ -10,7 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Package, Users } from "lucide-react";
-import { Header } from "@/components/header";
 import { IUser } from "@/lib/models/User";
 import AdminGreeting from "@/components/admin-greeting";
 import { useEffect, useState } from "react";

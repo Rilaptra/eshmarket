@@ -14,7 +14,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CircleDollarSign, Gem, Link2, PlusCircle } from "lucide-react";
 import { showToast } from "@/components/toast";
-import { Header } from "@/components/header";
 
 interface IProduct {
   title: string;

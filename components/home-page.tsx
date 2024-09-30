@@ -1,6 +1,6 @@
 "use client";
-import { IProduct } from "@/lib/models/Product";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,8 +10,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ChevronDown, ChevronRightIcon } from "lucide-react";
-import { Header } from "@/components/header"; // Import the new Header component
+import { ArrowRight, ChevronDown } from "lucide-react";
+import { Skeleton } from "./ui/skeleton";
+import DLIcon from "@/components/dl.svg";
+import PriceDisplay from "./pricedisplay";
+import Image from "next/image";
+
+interface IProduct {
+  _id: string;
+  title: string;
+  description: string;
+  price: {
+    dl: number;
+    money: number;
+  };
+  showcaseLink: string;
+  content: string;
+}
 
 export function HomePageComponent() {
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -42,14 +57,89 @@ export function HomePageComponent() {
     fetchProducts();
   }, []);
 
-  return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900">
-      <Header />
+  const ProductCard = ({
+    product,
+    loading,
+  }: {
+    product: IProduct;
+    loading: boolean;
+  }) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      <Card className="flex flex-col justify-between bg-white dark:bg-gray-800 overflow-hidden">
+        <CardHeader>
+          {loading ? (
+            <Skeleton className="h-8 w-3/4 mb-2" />
+          ) : (
+            <CardTitle className="text-gray-900 dark:text-white">
+              {product.title}
+            </CardTitle>
+          )}
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <>
+              <Skeleton className="h-4 w-full mb-2" />
+              <Skeleton className="h-4 w-3/4" />
+            </>
+          ) : (
+            <p className="text-gray-600 dark:text-gray-300 line-clamp-2">
+              {product.description}
+            </p>
+          )}
+        </CardContent>
+        <CardFooter className="flex justify-between items-center">
+          {loading ? (
+            <>
+              <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-10 w-28" />
+            </>
+          ) : (
+            <>
+              <span className="text-lg text-gray-900 dark:text-white flex items-center">
+                <PriceDisplay price={product.price.money} /> /{" "}
+                {product.price.dl}
+                <Image
+                  src={DLIcon}
+                  alt="DL"
+                  className="ml-2"
+                  width={24}
+                  height={24}
+                />
+              </span>
+              <Button
+                asChild
+                className="bg-black text-white hover:bg-gray-700 dark:bg-black dark:hover:bg-gray-700"
+              >
+                <Link href={`/product/buy/${product._id}`}>
+                  <motion.div
+                    className="flex items-center"
+                    whileHover={{ x: 5 }}
+                    transition={{ type: "spring", stiffness: 400 }}
+                  >
+                    Learn More
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </motion.div>
+                </Link>
+              </Button>
+            </>
+          )}
+        </CardFooter>
+      </Card>
+    </motion.div>
+  );
 
+  return (
+    <div className="flex flex-col min-h-screen bg-white dark:bg-white">
       <main className="flex-1 h-screen">
         {/* Hero Section */}
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
-          <div className="container px-4 md:px-6">
+          <div className="container px-4 md:px-6 mx-auto">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-normal sm:text-4xl md:text-5xl lg:text-6xl/none text-gray-900 dark:text-white">
@@ -80,37 +170,19 @@ export function HomePageComponent() {
               Our Products
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product, index) => (
-                <Card
-                  key={index}
-                  className="flex flex-col justify-between bg-white dark:bg-gray-800"
-                >
-                  <CardHeader>
-                    <CardTitle className="text-gray-900 dark:text-white">
-                      {product.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600 dark:text-gray-300 line-clamp-2">
-                      {product.description}
-                    </p>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                      Rp{product.price.money / 1000}k / {product.price.dl} DL
-                    </span>
-                    <Button
-                      asChild
-                      className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
-                    >
-                      <Link href={`/product/buy/${product._id}`}>
-                        Learn More{" "}
-                        <ChevronRightIcon className="ml-2 scale-75" />
-                      </Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+              {products.length > 0
+                ? products.map((product, index) => (
+                    <ProductCard
+                      key={index}
+                      product={product}
+                      loading={false}
+                    />
+                  ))
+                : Array(6)
+                    .fill(null)
+                    .map((p, index) => (
+                      <ProductCard key={index} product={p} loading={true} />
+                    ))}
             </div>
           </div>
         </section>

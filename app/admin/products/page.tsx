@@ -38,6 +38,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { LoadingAnimation } from "@/components/loading-animation";
+import { showToast } from "@/components/toast";
 
 export interface IProduct {
   _id: string;
@@ -81,15 +82,6 @@ export default function AdminProducts() {
     fetchProducts();
   }, []);
 
-  useEffect(() => {
-    console.log("Updated products:", products);
-    if (products.length > 0) {
-      products.map((prod) => {
-        console.log("Product:", prod);
-      });
-    }
-  }, [products]);
-
   const handleEdit = (product: IProduct) => {
     setEditingProduct({ ...product });
     setIsEditDialogOpen(true);
@@ -115,7 +107,9 @@ export default function AdminProducts() {
             )
           );
           setIsEditDialogOpen(false);
+          showToast(true, "Product Updated!");
         } else {
+          showToast(false, "Failed to update product");
           console.error("Failed to update product");
         }
       } catch (error) {
@@ -133,7 +127,9 @@ export default function AdminProducts() {
         if (response.ok) {
           setProducts(products.filter((p) => p._id !== productToDelete));
           setIsDeleteDialogOpen(false);
+          showToast(true, `Product Deleted!`);
         } else {
+          showToast(false, "Failed to delete product");
           console.error("Failed to delete product");
         }
       } catch (error) {
