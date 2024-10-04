@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Package, Users } from "lucide-react";
+import { Package, Users, DollarSign } from "lucide-react";
 import { IUser } from "@/lib/models/User";
 import AdminGreeting from "@/components/admin-greeting";
 import { useEffect, useState } from "react";
@@ -34,7 +34,7 @@ export default function AdminDashboard() {
         <div className="my-3">
           <AdminGreeting userInfo={userInfo} />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <Link href="/admin/products" className="block">
             <motion.div
               whileHover="hover"
@@ -81,6 +81,32 @@ export default function AdminDashboard() {
                 </CardContent>
                 <CardFooter className="text-center text-gray-600 dark:text-gray-300">
                   View and manage user accounts, permissions, and activities.
+                </CardFooter>
+              </Card>
+            </motion.div>
+          </Link>
+
+          <Link href="/admin/transactions" className="block">
+            <motion.div
+              whileHover="hover"
+              whileTap="tap"
+              variants={cardVariants}
+            >
+              <Card className="h-full cursor-pointer transition-shadow hover:shadow-lg">
+                <CardHeader className="text-center">
+                  <CardTitle className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                    Transactions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex justify-center items-center p-8">
+                  <DollarSign
+                    size={80}
+                    className="text-purple-500 dark:text-purple-300"
+                  />
+                </CardContent>
+                <CardFooter className="text-center text-gray-600 dark:text-gray-300">
+                  View and manage transactions, orders, and financial
+                  activities.
                 </CardFooter>
               </Card>
             </motion.div>

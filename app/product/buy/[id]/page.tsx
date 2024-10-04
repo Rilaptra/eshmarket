@@ -14,10 +14,11 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import DLIcon from "@/components/dl.svg";
 import { ShoppingCart } from "lucide-react";
 import PriceDisplay from "@/components/pricedisplay";
 import BuyConfirmationDialog from "@/components/buy-confirmation-dialog";
+import TrakteerModal from "@/components/TrakteerModal";
+import DiamondLock from "@/components/diamond-lock";
 
 interface IProduct {
   _id: string;
@@ -64,17 +65,6 @@ export default function ProductBuyPage() {
   // Handle buying with method Trakteer
   const handleBuyWithTrakteer = () => {
     setShowTrakteerModal(true);
-  };
-
-  const TrakteerModal = () => {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <iframe
-          src="https://trakteer.id/razuscript/tip/embed/modal"
-          className="w-full h-full"
-        ></iframe>
-      </div>
-    );
   };
 
   const SkeletonLoader = () => (
@@ -179,7 +169,7 @@ export default function ProductBuyPage() {
             <h2 className="text-xl font-semibold">Pricing</h2>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
               <div className="flex items-center gap-2">
-                <Image src={DLIcon} alt="DL" width={24} height={24} />
+                <DiamondLock s={24} />
                 <span className="text-lg font-medium">
                   {product.price.dl} DL
                 </span>
@@ -215,7 +205,15 @@ export default function ProductBuyPage() {
           </Button>
         </CardFooter>
       </Card>
-      {showTrakteerModal && <TrakteerModal />}
+      {showTrakteerModal && (
+        <TrakteerModal
+          isOpen={showTrakteerModal}
+          onClose={() => setShowTrakteerModal(false)}
+          productId={product._id}
+          productTitle={product.title}
+          price={product.price.money}
+        />
+      )}
     </div>
   );
 }
