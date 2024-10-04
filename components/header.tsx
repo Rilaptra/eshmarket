@@ -18,14 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { IUser } from "@/lib/models/User";
 import { DiscordLogoIcon } from "@radix-ui/react-icons";
-import {
-  Search,
-  ShoppingCart,
-  User,
-  LogOut,
-  LayoutDashboard,
-  Home,
-} from "lucide-react";
+import { Search, User, LogOut, LayoutDashboard, Home } from "lucide-react";
 import { IProduct } from "@/lib/models/Product";
 import ProductLink from "./product-link";
 import { UserInfoDialog } from "./userinfo-dialog";
@@ -36,12 +29,10 @@ export function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<IProduct[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [isSearchPopupOpen, setIsSearchPopupOpen] = useState(false);
 
   const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsSearching(true);
     try {
       const response = await fetch(`/api/search?q=${searchQuery}`);
       if (!response.ok) {
@@ -53,7 +44,6 @@ export function Header() {
     } catch (error) {
       console.error("Error during search:", error);
     } finally {
-      setIsSearching(false);
     }
   };
 

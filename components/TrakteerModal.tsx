@@ -69,9 +69,9 @@ export default function TrakteerModal({
         </DialogHeader>
         <div className="py-4">
           <p>
-            Please complete your payment of Rp{" "}
-            <span className="font-bold">{price}</span> for "{productTitle}" on
-            Trakteer.
+            Please complete your payment of Rp
+            <span className="font-bold">{price}</span> for &quot;{productTitle}
+            &quot; on Trakteer.
           </p>
           <TrakteerButton className="my-3" />
           <p>

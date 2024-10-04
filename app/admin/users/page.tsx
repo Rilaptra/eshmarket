@@ -163,10 +163,12 @@ export default function AdminUsers() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-4">
-                <img
+                <Image
                   src={user.profileImage}
                   alt={user.username}
-                  className="w-16 h-16 rounded-full"
+                  className="rounded-full"
+                  width={16}
+                  height={16}
                 />
                 <div>
                   <p className="text-sm text-muted-foreground">

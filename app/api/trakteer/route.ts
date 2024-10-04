@@ -109,7 +109,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     }
 
     // Proses data dari Trakteer.id
-    const { supporter_message, quantity, price, transaction_id } = body;
+    const { supporter_message, quantity, price } = body;
 
     const supporterName = await User.findOne({ discord_id: supporter_message })
       .lean()
