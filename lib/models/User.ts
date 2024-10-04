@@ -1,18 +1,21 @@
 import mongoose, { Document, Model } from "mongoose";
-
+export interface IGuild {
+  id: string;
+  name: string;
+  owner: boolean;
+}
 export interface IUser extends Document {
   username: string;
   profileImage: string;
   role: string;
   isAdmin: boolean;
   discord_id: string;
-  guilds?: Array<object> | null;
+  guilds?: Array<IGuild> | null;
   balance: {
     dl: number;
     money: number;
   };
   scriptBuyed: Array<string>;
-  chart: Array<object>;
 }
 
 const UserSchema = new mongoose.Schema<IUser>({
@@ -27,7 +30,6 @@ const UserSchema = new mongoose.Schema<IUser>({
     money: Number,
   },
   scriptBuyed: [String],
-  chart: [Object],
 });
 
 const User: Model<IUser> =

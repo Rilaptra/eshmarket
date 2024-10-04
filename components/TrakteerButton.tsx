@@ -1,9 +1,13 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
-const TrakteerButton = () => {
+interface TrakteerButtonProps {
+  className?: string;
+}
+
+const TrakteerButton = ({ className }: TrakteerButtonProps) => {
   return (
-    <Button asChild variant="ghost" className="p-0 h-auto">
+    <Button asChild variant="ghost" className={"p-0 h-auto " + className}>
       <a
         href="https://trakteer.id/erzy/tip"
         target="_blank"

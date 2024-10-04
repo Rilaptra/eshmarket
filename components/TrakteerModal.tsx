@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import TrakteerButton from "./TrakteerButton";
+import { showToast } from "./toast";
 
 interface TrakteerModalProps {
   isOpen: boolean;
@@ -41,16 +42,20 @@ export default function TrakteerModal({
         if (data.success) {
           router.push(`/product/download/${productId}`);
         } else {
-          alert(
+          showToast(
+            false,
             data.message || "Payment verification failed. Please try again."
           );
         }
       } else {
-        throw new Error("Payment verification failed");
+        showToast(
+          false,
+          (await response.json()).message || "Payment verification failed."
+        );
       }
     } catch (error) {
-      console.error("Error during payment verification:", error);
-      alert("An error occurred during payment verification. Please try again.");
+      console.log("Error during payment verification:", error);
+      showToast(false, "Payment verification failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -58,17 +63,18 @@ export default function TrakteerModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent className="bg-white">
         <DialogHeader>
           <DialogTitle>Trakteer Payment</DialogTitle>
         </DialogHeader>
         <div className="py-4">
           <p>
-            Please complete your payment of Rp {price} for {productTitle} on
+            Please complete your payment of Rp{" "}
+            <span className="font-bold">{price}</span> for "{productTitle}" on
             Trakteer.
           </p>
-          <TrakteerButton />
-          <p className="mt-2">
+          <TrakteerButton className="my-3" />
+          <p>
             After completing the payment, click the button below to verify your
             purchase.
           </p>

@@ -19,6 +19,9 @@ const nextConfig = {
         hostname: "i.ibb.co",
       },
       {
+        hostname: "cdn.trakteer.id",
+      },
+      {
         hostname: "cdn.discordapp.com",
       },
     ],

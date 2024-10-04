@@ -7,7 +7,7 @@ export function showToast(success: boolean, message: string) {
     variant: success ? "default" : "destructive",
     title: success ? "Success!" : "Error",
     description: message,
-    className: "bg-white",
+    className: "bg-white text-black",
     action: (
       <div className="flex items-center">
         {success ? (

@@ -4,12 +4,13 @@ import User from "@/lib/models/User";
 import Donation from "@/lib/models/Donation";
 import { cookies } from "next/headers";
 import Product from "@/lib/models/Product";
+import { decrypt } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
   await dbConnect();
 
   const cookieStore = cookies();
-  const discordId = cookieStore.get("discord_id")?.value;
+  const discordId = decrypt(cookieStore.get("discord_id")?.value || "");
 
   if (!discordId) {
     return NextResponse.json(
@@ -39,19 +40,21 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if the user has enough balance
-    if (user.balance.money < product.price.money) {
-      return NextResponse.json(
-        { success: false, message: "Insufficient balance" },
-        { status: 400 }
-      );
-    }
+    // if (user.balance.money < product.price.money) {
+    //   return NextResponse.json(
+    //     { success: false, message: "Insufficient balance" },
+    //     { status: 400 }
+    //   );
+    // }
 
     // Check if there's a recent donation matching the product price
     const recentDonation = await Donation.findOne({
       supporterName: user.username,
       amount: product.price.money,
-      createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }, // Within the last day
-    });
+      createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }, // Within the last 30 days
+    })
+      .sort({ createdAt: -1 })
+      .limit(1);
 
     if (!recentDonation) {
       return NextResponse.json(
@@ -108,19 +111,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Proses data dari Trakteer.id
     const { supporter_message, quantity, price, transaction_id } = body;
 
+    const supporterName = await User.findOne({ discord_id: supporter_message })
+      .lean()
+      .exec();
+
     // Hitung jumlah donasi
     const donationAmount = quantity * price;
 
     // Simpan informasi donasi ke database
-    const donation = Donation.create({
-      transactionId: transaction_id,
-      supporterName: supporter_message,
+    const donation = await Donation.create({
+      transactionId: new Date().getTime(),
+      supporterName: supporterName || "Anonymous",
       amount: donationAmount,
     });
 
     // Update balance user (asumsikan supporter_message adalah username)
     await User.findOneAndUpdate(
-      { username: supporter_message },
+      { username: supporterName },
       { $inc: { "balance.money": donationAmount } },
       { new: true }
     );

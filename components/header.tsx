@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -26,11 +26,36 @@ import {
   LayoutDashboard,
   Home,
 } from "lucide-react";
+import { IProduct } from "@/lib/models/Product";
+import ProductLink from "./product-link";
+import { UserInfoDialog } from "./userinfo-dialog";
 
 export function Header() {
   const [isUserInfoOpen, setIsUserInfoOpen] = useState(false);
   const [userInfo, setUserInfo] = useState<IUser | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<IProduct[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isSearchPopupOpen, setIsSearchPopupOpen] = useState(false);
+
+  const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSearching(true);
+    try {
+      const response = await fetch(`/api/search?q=${searchQuery}`);
+      if (!response.ok) {
+        throw new Error("Search failed");
+      }
+      const { data } = await response.json();
+      setSearchResults(data);
+      setIsSearchPopupOpen(true); // Open the popup when results are available
+    } catch (error) {
+      console.error("Error during search:", error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   // Fungsi untuk mengambil data user
   const fetchUserData = async () => {
@@ -95,6 +120,10 @@ export function Header() {
     try {
       const response = await fetch("/api/logout");
       if (response.ok) {
+        localStorage.removeItem("userInfo");
+        localStorage.removeItem("userInfoTimestamp");
+        setIsLoggedIn(false);
+        setUserInfo(null);
         window.location.reload();
       } else {
         console.error("Logout failed");
@@ -111,7 +140,7 @@ export function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex items-center space-x-2 w-full lg:w-auto justify-center lg:justify-start"
+            className="flex items-center space-x-2 w-full md:w-auto justify-center md:justify-start"
           >
             <Image
               src="https://i.ibb.co/zbqtFBQ/1727490493494.jpg"
@@ -120,24 +149,36 @@ export function Header() {
               height={40}
               className="rounded-lg bg-cover size"
             />
-            <span className="text-xl font-bold text-primary w-full text-center lg:text-left block lg:inline-block">
+            <span className="text-xl font-bold text-primary w-full text-center md:text-left block md:inline-block">
               Esh Market
             </span>
           </Link>
 
           {/* Search Bar */}
-          <div className="hidden flex-1 max-w-md mx-4 lg:flex">
-            <div className="relative w-full">
+          <div className="hidden flex-1 max-w-sm mx-4 md:flex">
+            <form onSubmit={handleSearch} className="relative w-full">
               <Input
                 type="text"
                 placeholder="Search products..."
                 className="w-full pl-10 pr-4 py-2"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  if (e.target.value === "") {
+                    setIsSearchPopupOpen(false);
+                    setSearchResults([]);
+                  }
+                }}
               />
-              <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={18}
-              />
-            </div>
+              <Button
+                type="submit"
+                variant="ghost"
+                size="icon"
+                className="absolute left-2 top-1/2 transform -translate-y-1/2"
+              >
+                <Search className="h-4 w-4" />
+              </Button>
+            </form>
           </div>
 
           {/* Navigation */}
@@ -175,12 +216,6 @@ export function Header() {
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/cart">
-                      <ShoppingCart className="mr-2 h-4 w-4" />
-                      <span>Shopping Cart</span>
-                    </Link>
-                  </DropdownMenuItem>
                   {userInfo.isAdmin && (
                     <DropdownMenuItem asChild>
                       <Link href="/admin/dashboard">
@@ -216,41 +251,37 @@ export function Header() {
         </div>
       </div>
 
-      {/* User Info Dialog */}
-      <Dialog open={isUserInfoOpen} onOpenChange={setIsUserInfoOpen}>
-        <DialogContent>
+      {/* Search Results */}
+      <Dialog open={isSearchPopupOpen} onOpenChange={setIsSearchPopupOpen}>
+        <DialogContent className="bg-white">
           <DialogHeader>
-            <DialogTitle>User Information</DialogTitle>
+            <DialogTitle>Search Results</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="flex items-center gap-4">
-              <Image
-                src={
-                  userInfo?.profileImage ||
-                  "https://i.ibb.co/2dh4YL3/nulprofile.jpg"
-                }
-                alt="User Avatar"
-                width={64}
-                height={64}
-                className="rounded-full"
-              />
-              <div>
-                <h3 className="font-semibold">{userInfo?.username}</h3>
-                <p className="text-sm text-gray-500">{userInfo?.discord_id}</p>
-              </div>
-            </div>
-            <div>
-              <h4 className="font-semibold">User ID:</h4>
-              <p>{userInfo?.discord_id}</p>
-            </div>
-            <div>
-              <h4 className="font-semibold">Role:</h4>
-              <p>{userInfo?.isAdmin ? "Admin" : "User"}</p>
-            </div>
-            {/* Add more user information fields as needed */}
+          <div className="mt-4">
+            {searchResults.length > 0 ? (
+              <ul>
+                {searchResults.map((product) => (
+                  <li key={product._id} className="mb-2">
+                    <ProductLink
+                      product={product}
+                      setIsSearchPopupOpen={setIsSearchPopupOpen}
+                    />
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No results found.</p>
+            )}
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* User Info Dialog */}
+      <UserInfoDialog
+        isUserInfoOpen={isUserInfoOpen}
+        setIsUserInfoOpen={setIsUserInfoOpen}
+        userInfo={userInfo}
+      />
     </header>
   );
 }
