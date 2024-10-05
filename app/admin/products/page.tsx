@@ -217,9 +217,12 @@ export default function AdminProducts() {
                 <Button
                   className="w-full"
                   onClick={() => {
-                    const blob = new Blob([product.content], {
-                      type: "text/plain",
-                    });
+                    const blob = new Blob(
+                      [product.content.slice(0, 1024 * 2)],
+                      {
+                        type: "text/plain",
+                      }
+                    );
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement("a");
                     a.href = url;

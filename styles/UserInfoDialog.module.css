@@ -1,0 +1,17 @@
+@media (max-width: 640px) {
+  .dialog-content {
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .dialog-content {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .dialog-content {
+    padding: 2rem;
+  }
+}

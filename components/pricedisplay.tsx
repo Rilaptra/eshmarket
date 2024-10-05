@@ -1,4 +1,5 @@
 import React from "react";
+import DiamondLock from "./diamond-lock";
 export function RpIcon() {
   return (
     <svg
@@ -6,7 +7,7 @@ export function RpIcon() {
       viewBox="0 0 100 100"
       x="0px"
       y="0px"
-      className="w-6"
+      className="w-6 dark:stroke-white"
     >
       <g data-name="14-Rupiah">
         <path d="M50,5A45,45,0,1,0,95,50,45.05,45.05,0,0,0,50,5Zm0,86A41,41,0,1,1,91,50,41,41,0,0,1,50,91Z" />
@@ -16,16 +17,23 @@ export function RpIcon() {
     </svg>
   );
 }
-const PriceDisplay = ({ price }: { price: number }) => {
+const PriceDisplay = ({ price, dl }: { price: number; dl?: number }) => {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-lg font-medium">
-        <RpIcon />
+      <RpIcon />
+      <span className="text-lg dark:text-white font-medium">
         {price.toLocaleString("id-ID", {
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,
         })}
       </span>
+      {dl && (
+        <div>
+          <span className="text-lg dark:text-white"> or </span>
+          <DiamondLock s={24} className="inline-flex items-center" />
+          <span className="text-lg dark:text-white"> {dl}</span>
+        </div>
+      )}
     </div>
   );
 };

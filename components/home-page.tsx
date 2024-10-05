@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,11 +10,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowRight, ChevronDown } from "lucide-react";
-import { Skeleton } from "./ui/skeleton";
-import DLIcon from "@/components/dl.svg";
+import { ArrowRight, ChevronDown, Search } from "lucide-react";
 import PriceDisplay from "./pricedisplay";
-import Image from "next/image";
+import { Input } from "@/components/ui/input";
+import { useInView } from "react-intersection-observer";
 
 interface IProduct {
   _id: string;
@@ -30,6 +29,12 @@ interface IProduct {
 
 export function HomePageComponent() {
   const [products, setProducts] = useState<IProduct[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState<IProduct[]>([]);
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
 
   useEffect(() => {
     async function fetchProducts() {
@@ -49,6 +54,7 @@ export function HomePageComponent() {
                 : product.description,
           }));
         setProducts(sortedProducts);
+        setFilteredProducts(sortedProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -57,147 +63,147 @@ export function HomePageComponent() {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    const filtered = products.filter(
+      (product) =>
+        product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+  }, [searchTerm, products]);
+
   const ProductCard = ({
     product,
-    loading,
+    index,
   }: {
     product: IProduct;
-    loading: boolean;
+    index: number;
   }) => (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.98 }}
     >
-      <Card className="flex flex-col justify-between bg-white dark:bg-gray-800 overflow-hidden">
+      <Card className="h-full flex flex-col justify-between bg-white dark:bg-gray-800 overflow-hidden border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
         <CardHeader>
-          {loading ? (
-            <Skeleton className="h-8 w-3/4 mb-2" />
-          ) : (
-            <CardTitle className="text-gray-900 dark:text-white">
-              {product.title}
-            </CardTitle>
-          )}
+          <CardTitle className="text-xl font-bold text-gray-900 dark:text-white">
+            {product.title}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          {loading ? (
-            <>
-              <Skeleton className="h-4 w-full mb-2" />
-              <Skeleton className="h-4 w-3/4" />
-            </>
-          ) : (
-            <p className="text-gray-600 dark:text-gray-300 line-clamp-2">
-              {product.description}
-            </p>
-          )}
+          <p className="text-gray-600 dark:text-gray-300 line-clamp-3">
+            {product.description}
+          </p>
         </CardContent>
-        <CardFooter className="flex justify-between items-center">
-          {loading ? (
-            <>
-              <Skeleton className="h-6 w-24" />
-              <Skeleton className="h-10 w-28" />
-            </>
-          ) : (
-            <>
-              <span className="text-lg text-gray-900 dark:text-white flex items-center">
-                <PriceDisplay price={product.price.money} /> /{" "}
-                {product.price.dl}
-                <Image
-                  src={DLIcon}
-                  alt="DL"
-                  className="ml-2"
-                  width={24}
-                  height={24}
-                />
+        <CardFooter className="flex justify-between items-center mt-auto">
+          <PriceDisplay price={product.price.money} dl={product.price.dl} />
+          <Button asChild variant="outline" className="group dark:text-white">
+            <Link href={`/product/buy/${product._id}`}>
+              <span className="flex items-center">
+                Learn More
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </span>
-              <Button
-                asChild
-                className="bg-black text-white hover:bg-gray-700 dark:bg-black dark:hover:bg-gray-700"
-              >
-                <Link href={`/product/buy/${product._id}`}>
-                  <motion.div
-                    className="flex items-center"
-                    whileHover={{ x: 5 }}
-                    transition={{ type: "spring", stiffness: 400 }}
-                  >
-                    Learn More
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </motion.div>
-                </Link>
-              </Button>
-            </>
-          )}
+            </Link>
+          </Button>
         </CardFooter>
       </Card>
     </motion.div>
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-white">
-      <main className="flex-1 h-screen">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+      <main className="flex-1">
         {/* Hero Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+        <section className="w-full py-20 md:py-32 lg:py-48">
           <div className="container px-4 md:px-6 mx-auto">
-            <div className="flex flex-col items-center space-y-4 text-center">
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-normal sm:text-4xl md:text-5xl lg:text-6xl/none text-gray-900 dark:text-white">
-                  Welcome to Erzy.sh Market
-                </h1>
-                <p className="mx-auto max-w-[700px] text-gray-600 dark:text-gray-300 md:text-xl">
-                  Discover amazing products at unbeatable prices.
-                </p>
-              </div>
+            <motion.div
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="flex flex-col items-center space-y-8 text-center"
+            >
+              <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl md:text-7xl lg:text-8xl bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600">
+                Welcome to Erzy.sh Market
+              </h1>
+              <p className="mx-auto max-w-[700px] text-xl text-gray-600 dark:text-gray-300 md:text-2xl">
+                Discover amazing products at unbeatable prices.
+              </p>
               <Button
-                className="inline-flex items-center rounded-md text-sm font-medium bg-black transition-colors duration-300 text-white hover:bg-gray-700 dark:bg-gray-500 dark:hover:bg-black"
+                size="lg"
+                className="group bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 transition-all duration-300"
                 onClick={() => {
                   const productsSection = document.getElementById("products");
                   productsSection?.scrollIntoView({ behavior: "smooth" });
                 }}
               >
-                View Products
-                <ChevronDown className="ml-2 h-4 w-4" />
+                Explore Products
+                <ChevronDown className="ml-2 h-5 w-5 transition-transform group-hover:translate-y-1" />
               </Button>
-            </div>
+            </motion.div>
           </div>
         </section>
 
         {/* Products Section */}
-        <section id="products" className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl mb-8 text-gray-900 dark:text-white">
+        <section id="products" className="w-full py-20" ref={ref}>
+          <div className="container px-4 md:px-6 mx-auto">
+            <h2 className="text-4xl font-bold tracking-tight mb-8 text-center text-gray-900 dark:text-white">
               Our Products
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.length > 0
-                ? products.map((product, index) => (
-                    <ProductCard
-                      key={index}
-                      product={product}
-                      loading={false}
-                    />
-                  ))
-                : Array(6)
-                    .fill(null)
-                    .map((p, index) => (
-                      <ProductCard key={index} product={p} loading={true} />
-                    ))}
+            <div className="mb-8 max-w-md mx-auto relative">
+              <Input
+                type="text"
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full"
+              />
+              <Search
+                className="text-gray-400 absolute right-2 top-0 h-full"
+                size={18}
+              />
             </div>
+            <AnimatePresence>
+              {inView && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+                >
+                  {filteredProducts.map((product, index) => (
+                    <ProductCard
+                      key={product._id}
+                      product={product}
+                      index={index}
+                    />
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+            {filteredProducts.length === 0 && (
+              <p className="text-center text-gray-600 dark:text-gray-400 mt-8">
+                No products found. Try adjusting your search.
+              </p>
+            )}
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="w-full py-6 bg-gray-100 dark:bg-gray-800">
-        <div className="container px-4 md:px-6">
-          <p className="text-center text-sm text-gray-600 dark:text-gray-300">
-            &copy; 2024 Erzy.sh Market. All rights reserved.
-          </p>
-          <p className="mt-2 text-center text-xs text-gray-600 dark:text-gray-300">
-            &quot;The best way to predict the future is to create it.&quot; -
-            Peter Drucker
-          </p>
+      <footer className="w-full py-8 bg-gray-100 dark:bg-gray-800">
+        <div className="container px-4 md:px-6 mx-auto">
+          <div className="flex flex-col items-center space-y-4">
+            <p className="text-center text-sm text-gray-600 dark:text-gray-300">
+              &copy; 2024 Erzy.sh Market. All rights reserved.
+            </p>
+            <p className="text-center text-xs text-gray-500 dark:text-gray-400 italic">
+              &quot;The best way to predict the future is to create it.&quot; -
+              Peter Drucker
+            </p>
+          </div>
         </div>
       </footer>
     </div>

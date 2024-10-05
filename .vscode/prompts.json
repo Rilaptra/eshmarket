@@ -1,0 +1,6 @@
+[
+  {
+    "title": "Adjust for any display or any screen",
+    "content": "Please remake the selected code to compatible for different screen ratio, on mobile, tablet, or desktop, i mean make this responsive and can adjust to any different display ratio without changing the base style, only add or modify code just for make the selected code responsive and can adjust to whatever display. You can use any of npm modules or any other tools to make this code responsive, currently I'm using nextjs with ts, eslint, react, tailwindcss, shadcn, framer-motion, and lucide-react. Make sure to use Chain of Thoughts method for solving this problems, make it have the best UI/UX for responsive but you can't change the style."
+  }
+]

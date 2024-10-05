@@ -23,12 +23,11 @@ export const metadata: Metadata = {
     title: "Erzy.sh Market",
     description:
       "Discover and download top-notch server scripts for your gaming community. Enjoy our best script in Erzy.sh Market.",
-    images: [
-      {
-        url: "https://i.ibb.co/zbqtFBQ/1727490493494.jpg",
-      },
-    ],
     type: "website",
+    images: {
+      url: "https://i.ibb.co/zbqtFBQ/1727490493494.jpg",
+      alt: "Erzy.sh Market",
+    },
   },
   icons: [
     {
