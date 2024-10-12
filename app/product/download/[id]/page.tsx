@@ -25,7 +25,7 @@ export default function ProductDownloadPage() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`/api/product/${id}/download`);
+        const res = await fetch(`/api/product/${id}`);
         const data = await res.json();
         if (res.ok) {
           setProduct(data);
@@ -62,16 +62,17 @@ export default function ProductDownloadPage() {
         </CardHeader>
         <CardContent>
           <p className="mb-4">{product.description}</p>
-          <h3 className="text-lg font-semibold mb-2">Instructions:</h3>
+          <h3 className="text-lg font-semibold mb-2">Script Preview:</h3>
           <pre className="bg-gray-100 p-4 rounded-md overflow-x-auto">
-            {product.content}
+            {product.content.slice(0, 512)}{" "}
+            {`(... ${((product.content.length - 512) / 1024).toFixed(2)} KB)`}
           </pre>
         </CardContent>
         <CardFooter>
           <Button
             onClick={() => navigator.clipboard.writeText(product.content)}
           >
-            Copy Content
+            Download File
           </Button>
         </CardFooter>
       </Card>

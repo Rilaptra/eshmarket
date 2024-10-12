@@ -30,6 +30,7 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<IProduct[]>([]);
   const [isSearchPopupOpen, setIsSearchPopupOpen] = useState(false);
+  const ngrokurl = 1546;
 
   const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -102,8 +103,7 @@ export function Header() {
   }, []);
 
   const handleLogin = () => {
-    window.location.href =
-      "https://discord.com/oauth2/authorize?client_id=1238151974382338118&response_type=code&redirect_uri=https%3A%2F%2F475f-47-252-47-61.ngrok-free.app%2Fapi%2Flogin&scope=identify+guilds";
+    window.location.href = `https://discord.com/oauth2/authorize?client_id=1238151974382338118&response_type=code&redirect_uri=https%3A%2F%2F${ngrokurl}-47-252-47-61.ngrok-free.app%2Fapi%2Flogin&scope=identify+guilds`;
   };
 
   const handleLogout = async () => {

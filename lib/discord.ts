@@ -25,6 +25,8 @@ export interface DiscordEmbedMessage {
   footer?: {
     text: string;
   };
+  url?: string;
+
   timestamp: string;
   thumbnail?: {
     url: string;
@@ -42,8 +44,8 @@ export interface DiscordEmbedMessage {
 export interface DiscordWebhookMessage {
   content?: string;
   embeds?: DiscordEmbedMessage[];
-  username: "Erzy.sh Market";
-  avatar_url: "https://i.ibb.co/zbqtFBQ/1727490493494.jpg";
+  username?: "Erzy.sh Market";
+  avatar_url?: "https://i.ibb.co/zbqtFBQ/1727490493494.jpg";
   tts?: boolean;
   file?: {
     attachment: string;
@@ -113,8 +115,23 @@ export function colorConverter(color: string | number) {
 }
 
 export async function sendDiscordWebhook(
-  message: string | DiscordWebhookMessage
+  message: string | DiscordWebhookMessage | FormData
 ) {
+  // Check if te message is FormData
+  if (message instanceof FormData) {
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      body: message, // Mengirimkan FormData berisi file dan embed
+    });
+
+    if (!response.ok) {
+      console.error(`Failed to send Discord webhook: ${response.status}`);
+      throw new Error(`Failed to send Discord webhook: ${response.status}`);
+    }
+
+    return response;
+  }
+
   const data: DiscordWebhookMessage =
     typeof message === "string"
       ? {
@@ -123,6 +140,8 @@ export async function sendDiscordWebhook(
           username: "Erzy.sh Market",
         }
       : message;
+  data.avatar_url = "https://i.ibb.co/zbqtFBQ/1727490493494.jpg";
+  data.username = "Erzy.sh Market";
 
   data.embeds = data.embeds
     ? data.embeds.map((embed) => {
@@ -135,7 +154,6 @@ export async function sendDiscordWebhook(
       })
     : undefined;
 
-  console.log(data, webhookUrl);
   const response = await fetch(webhookUrl, {
     method: "POST",
     headers: {

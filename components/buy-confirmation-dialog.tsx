@@ -14,6 +14,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, Upload, Check } from "lucide-react";
+import { showToast } from "./toast";
+import LoadingBlue from "./loading-blue";
+import { ShowPopUp } from "./showPopUp";
+
+interface IUser {
+  _id: string;
+}
 
 interface IProduct {
   _id: string;
@@ -37,10 +44,15 @@ export default function BuyConfirmationDialog({
   const [step, setStep] = useState(1);
   const [screenrecord, setScreenrecord] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [popupOpen, setPopupOpen] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
+      // reject if the file size is > 25 MB
+      if (event.target.files[0].size > 25 * 1024 * 1024) {
+        setPopupOpen(true);
+        return;
+      }
       setScreenrecord(event.target.files[0]);
     }
   };
@@ -52,23 +64,25 @@ export default function BuyConfirmationDialog({
     }
 
     setIsLoading(true);
+    const user: IUser = JSON.parse(localStorage.getItem("userInfo") || "");
 
     const formData = new FormData();
     formData.append("screenrecord", screenrecord);
+    formData.append("productId", product._id);
+    formData.append("userId", user._id);
 
     try {
-      const response = await fetch(`/api/product/${product._id}/dl`, {
+      const response = await fetch(`/api/dl`, {
         method: "POST",
-        body: JSON.stringify({
-          product: product,
-          user: localStorage.getItem("userInfo"),
-          formData: formData,
-        }),
+        body: formData,
       });
 
       if (response.ok) {
         onClose();
-        router.push("/");
+        showToast(
+          true,
+          "Video submitted successfully! Please wait for the admin to verify your purchase."
+        );
       } else {
         throw new Error("Purchase failed");
       }
@@ -103,7 +117,7 @@ export default function BuyConfirmationDialog({
       title: "Take a Screen Record",
       description: "Record it when you donating.",
       action: (
-        <div className="flex gap-3 p-4 rounded-lg justify-between items-center text-red-500 bg-red-100">
+        <div className="flex gap-3 p-4 dark:bg-slate-800 rounded-lg justify-between items-center text-red-500 bg-red-100">
           <AlertCircle className="w-20" />
           <span className="font-light text-sm">
             IMPORTANT: Ensure the system message is clearly visible. Make sure
@@ -122,7 +136,7 @@ export default function BuyConfirmationDialog({
         <div className="mt-4">
           <Label
             htmlFor="screenrecord"
-            className="block text-sm font-medium text-gray-700"
+            className="block text-sm font-medium dark:text-gray-300 text-gray-700"
           >
             Upload Screen Record
           </Label>
@@ -149,7 +163,7 @@ export default function BuyConfirmationDialog({
   const currentStep = steps[step - 1];
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[80vh] overflow-y-auto bg-white">
+      <DialogContent className="max-h-[80vh] rounded-xl overflow-y-auto bg-slate-50 dark:bg-slate-900">
         <DialogHeader>
           <DialogTitle>How to Buy Using Diamond Lock</DialogTitle>
           <DialogDescription>
@@ -174,6 +188,14 @@ export default function BuyConfirmationDialog({
               />
             )}
             {currentStep.action}
+            {/* Pop up appeared when the user upload file size > 20MB */}
+            <ShowPopUp
+              type="ERROR"
+              title="File size too large"
+              message="File size exceeds 25 MB. Please upload a smaller file!"
+              isOpen={popupOpen}
+              onClose={() => setPopupOpen(false)}
+            />
           </div>
         </div>
         <DialogFooter className="flex justify-between items-center">
@@ -183,18 +205,16 @@ export default function BuyConfirmationDialog({
             </Button>
           )}
           {step < steps.length ? (
-            <Button onClick={() => setStep(step + 1)}>Next</Button>
+            <Button variant="outline" onClick={() => setStep(step + 1)}>
+              Next
+            </Button>
           ) : (
             <Button
               onClick={handleConfirmDonation}
               disabled={isLoading || !screenrecord}
             >
               {isLoading ? (
-                <motion.div
-                  className="w-5 h-5 border-t-2 border-blue-500 border-solid rounded-full"
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                />
+                <LoadingBlue />
               ) : (
                 "I have finished donating the Diamond Lock"
               )}

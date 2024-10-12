@@ -39,19 +39,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Check if the user has enough balance
-    // if (user.balance.money < product.price.money) {
-    //   return NextResponse.json(
-    //     { success: false, message: "Insufficient balance" },
-    //     { status: 400 }
-    //   );
-    // }
-
     // Check if there's a recent donation matching the product price
     const recentDonation = await Donation.findOne({
       supporterName: user.username,
       amount: product.price.money,
-      createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }, // Within the last 30 days
+      createdAt: { $gte: new Date(Date.now() - 1000 * 60 * 10) }, // Within the last 10 minutes
     })
       .sort({ createdAt: -1 })
       .limit(1);

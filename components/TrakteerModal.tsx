@@ -63,7 +63,7 @@ export default function TrakteerModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-white">
+      <DialogContent className="bg-slate-100 dark:bg-slate-900">
         <DialogHeader>
           <DialogTitle>Trakteer Payment</DialogTitle>
         </DialogHeader>
