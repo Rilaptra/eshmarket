@@ -35,31 +35,35 @@ export default function BuyConfirmationDialog({
   onClose,
 }: BuyConfirmationDialogProps) {
   const [step, setStep] = useState(1);
-  const [screenshot, setScreenshot] = useState<File | null>(null);
+  const [screenrecord, setScreenrecord] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      setScreenshot(event.target.files[0]);
+      setScreenrecord(event.target.files[0]);
     }
   };
 
   const handleConfirmDonation = async () => {
-    if (!screenshot) {
-      alert("Please upload a screenshot before confirming.");
+    if (!screenrecord) {
+      alert("Please upload a screen record before confirming.");
       return;
     }
 
     setIsLoading(true);
 
     const formData = new FormData();
-    formData.append("screenshot", screenshot);
+    formData.append("screenrecord", screenrecord);
 
     try {
       const response = await fetch(`/api/product/${product._id}/dl`, {
         method: "POST",
-        body: formData,
+        body: JSON.stringify({
+          product: product,
+          user: localStorage.getItem("userInfo"),
+          formData: formData,
+        }),
       });
 
       if (response.ok) {
@@ -93,11 +97,11 @@ export default function BuyConfirmationDialog({
       description:
         "Locate and open the system tab on your game console. It should look similar to this image:",
       image:
-        "https://i.ibb.co/qDHDRbq/1727595555257-Screenshot-2024-09-29-14-32-40-20-aedbcaf2756c7788e53d6cbb3446304f.jpg", // Replace with actual image path
+        "https://i.ibb.co/qDHDRbq/1727595555257-Screenrecord-2024-09-29-14-32-40-20-aedbcaf2756c7788e53d6cbb3446304f.jpg", // Replace with actual image path
     },
     {
-      title: "Take a Clear Screenshot",
-      description: "Capture a screenshot of your game screen.",
+      title: "Take a Screen Record",
+      description: "Record it when you donating.",
       action: (
         <div className="flex gap-3 p-4 rounded-lg justify-between items-center text-red-500 bg-red-100">
           <AlertCircle className="w-20" />
@@ -105,36 +109,36 @@ export default function BuyConfirmationDialog({
             IMPORTANT: Ensure the system message is clearly visible. Make sure
             NO notifications (like YouTube, Discord, or other apps) are covering
             the system message. Only Growtopia&apos;s own system messages should
-            be visible in the screenshot.
+            be visible in the screenrecord.
           </span>
         </div>
       ),
     },
     {
-      title: "Upload Screenshot",
+      title: "Upload Screen Record",
       description:
-        "Upload your clear screenshot to this platform. Double-check that the image has been successfully uploaded.",
+        "Upload your clear screenrecord to this platform. Double-check that the image has been successfully uploaded.",
       action: (
         <div className="mt-4">
           <Label
-            htmlFor="screenshot"
+            htmlFor="screenrecord"
             className="block text-sm font-medium text-gray-700"
           >
-            Upload Screenshot
+            Upload Screen Record
           </Label>
           <div className="flex gap-3 justify-between">
             <Input
-              id="screenshot"
+              id="screenrecord"
               type="file"
-              accept="image/*"
+              accept="video/*"
               onChange={handleFileChange}
               className="mt-1 cursor-pointer"
             />
             <Upload className="mt-3" />
           </div>
-          {screenshot && (
+          {screenrecord && (
             <p className="mt-2 text-sm text-green-600 flex items-center">
-              <Check className="w-4 h-4 mr-1" /> Screenshot uploaded
+              <Check className="w-4 h-4 mr-1" /> Screen Record uploaded
             </p>
           )}
         </div>
@@ -183,7 +187,7 @@ export default function BuyConfirmationDialog({
           ) : (
             <Button
               onClick={handleConfirmDonation}
-              disabled={isLoading || !screenshot}
+              disabled={isLoading || !screenrecord}
             >
               {isLoading ? (
                 <motion.div

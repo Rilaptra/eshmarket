@@ -228,7 +228,7 @@ export default function AddProductPage() {
                   <Label className="text-lg">File Content Preview</Label>
                   <div className="relative">
                     <Textarea
-                      value={product.content.slice(0, 1024 * 2)}
+                      value={product.content.slice(0, 100)}
                       readOnly
                       rows={5}
                       placeholder="Product details will appear here..."

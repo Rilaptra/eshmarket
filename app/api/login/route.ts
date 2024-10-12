@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     client_secret: process.env.ClientSecret,
     code,
     grant_type: "authorization_code",
-    redirect_uri: "https://475f-47-252-47-61.ngrok-free.app/api/login",
+    redirect_uri: process.env.NGROK_URL + "/api/login",
   });
 
   try {
@@ -114,9 +114,7 @@ export async function GET(request: NextRequest) {
     // Simpan discordId ke cookie
     const discordId = encrypt(`${user.discord_id}`);
 
-    const response = NextResponse.redirect(
-      new URL("https://475f-47-252-47-61.ngrok-free.app")
-    );
+    const response = NextResponse.redirect(new URL(process.env.NGROK_URL));
 
     response.cookies.set("discord_id", discordId, {
       maxAge: 60 * 60 * 24 * 7,
