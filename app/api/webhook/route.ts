@@ -3,7 +3,7 @@ import {
   DiscordWebhookMessage,
   sendDiscordWebhook,
 } from "@/lib/discord";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function GET() {
   // const message = "Hello, this is a test webhook!";

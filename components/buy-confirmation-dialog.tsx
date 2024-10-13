@@ -1,7 +1,5 @@
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import {
   Dialog,
   DialogContent,

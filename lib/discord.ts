@@ -1,5 +1,3 @@
-import { NextResponse } from "next/server";
-
 export interface DiscordEmbedMessage {
   title: string;
   description?: string;
@@ -47,16 +45,12 @@ export interface DiscordWebhookMessage {
   username?: "Erzy.sh Market";
   avatar_url?: "https://i.ibb.co/zbqtFBQ/1727490493494.jpg";
   tts?: boolean;
-  file?: {
-    attachment: string;
-    name: string;
-  };
   allowed_mentions?: {
     parse?: string[];
     roles?: string[];
     users?: string[];
   };
-  components?: {};
+  //TODO: Add components for buttons etc.
 }
 
 const webhookUrl = process.env.DISCORD_WEBHOOK_URL;

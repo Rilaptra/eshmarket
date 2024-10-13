@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Product from "@/lib/models/Product";
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest) {
   const body = await request.json();
   if (!body.title || !body.description || !body.price.dl || !body.price.money) {
     return NextResponse.json({
