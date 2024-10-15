@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     description:
       "Discover and download top-notch server scripts for your gaming community. Enjoy our best script in Erzy.sh Market.",
     type: "website",
+    siteName: "Erzy.sh Market",
     images: {
       url: "https://i.ibb.co/zbqtFBQ/1727490493494.jpg",
       alt: "Erzy.sh Market",
