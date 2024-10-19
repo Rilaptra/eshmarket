@@ -110,7 +110,8 @@ export function Header() {
       const response = await fetch("/api/logout");
       if (response.ok) {
         // Delete user info from localStorage
-        localStorage.clear();
+        localStorage.setItem("userInfo", "");
+        localStorage.setItem("userInfoTimestamp", "");
         setIsLoggedIn(false);
         setUserInfo(null);
         window.location.reload();
@@ -172,7 +173,7 @@ export function Header() {
 
           {/* Navigation */}
           <nav className="flex items-center space-x-4">
-            {isLoggedIn && userInfo ? (
+            {userInfo ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
