@@ -2,6 +2,7 @@
 import { useState, useEffect, FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,11 +18,19 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { IUser } from "@/lib/models/User";
-import { DiscordLogoIcon } from "@radix-ui/react-icons";
-import { Search, User, LogOut, LayoutDashboard, Home } from "lucide-react";
+import { DiscordLogoIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
+import {
+  Search,
+  User,
+  LogOut,
+  LayoutDashboard,
+  Home,
+  Menu,
+} from "lucide-react";
 import { IProduct } from "@/lib/models/Product";
 import ProductLink from "./product-link";
 import { UserInfoDialog } from "./userinfo-dialog";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function Header() {
   const [isUserInfoOpen, setIsUserInfoOpen] = useState(false);
@@ -30,6 +39,8 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<IProduct[]>([]);
   const [isSearchPopupOpen, setIsSearchPopupOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,14 +51,12 @@ export function Header() {
       }
       const { data } = await response.json();
       setSearchResults(data);
-      setIsSearchPopupOpen(true); // Open the popup when results are available
+      setIsSearchPopupOpen(true);
     } catch (error) {
       console.error("Error during search:", error);
-    } finally {
     }
   };
 
-  // Fungsi untuk mengambil data user
   const fetchUserData = async () => {
     const response = await fetch(`/api/me`);
     if (!response.ok) {
@@ -57,17 +66,15 @@ export function Header() {
     return data;
   };
 
-  // Fungsi untuk memeriksa apakah data sudah kadaluarsa (lebih dari 5 menit)
   const isDataExpired = (timestamp: number) => {
     const now = Date.now();
-    const fiveMinutes = 5 * 60 * 1000; // 5 menit dalam milidetik
+    const fiveMinutes = 5 * 60 * 1000;
     return now - timestamp > fiveMinutes;
   };
 
   useEffect(() => {
     async function getUserInfo() {
       try {
-        // Cek localStorage
         const storedUserInfo = localStorage.getItem("userInfo");
         const storedTimestamp = localStorage.getItem("userInfoTimestamp");
 
@@ -76,17 +83,14 @@ export function Header() {
           const timestamp = parseInt(storedTimestamp, 10);
 
           if (!isDataExpired(timestamp) && parsedUserInfo) {
-            // Gunakan data dari localStorage jika belum kadaluarsa
             setUserInfo(parsedUserInfo);
             setIsLoggedIn(true);
             return;
           }
         }
 
-        // Jika tidak ada data di localStorage atau data sudah kadaluarsa, lakukan fetch
         const data = await fetchUserData();
 
-        // Simpan data baru ke localStorage
         localStorage.setItem("userInfo", JSON.stringify(data));
         localStorage.setItem("userInfoTimestamp", Date.now().toString());
 
@@ -109,9 +113,8 @@ export function Header() {
     try {
       const response = await fetch("/api/logout");
       if (response.ok) {
-        // Delete user info from localStorage
-        localStorage.setItem("userInfo", "");
-        localStorage.setItem("userInfoTimestamp", "");
+        localStorage.removeItem("userInfo");
+        localStorage.removeItem("userInfoTimestamp");
         setIsLoggedIn(false);
         setUserInfo(null);
         window.location.reload();
@@ -124,28 +127,23 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 dark:bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors duration-300">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link
-            href="/"
-            className="flex items-center space-x-2 w-full md:w-auto justify-center md:justify-start"
-          >
+          <Link href="/" className="flex items-center space-x-2">
             <Image
               src="https://i.ibb.co/zbqtFBQ/1727490493494.jpg"
               alt="Esh Market Logo"
               width={40}
               height={40}
-              className="rounded-lg bg-cover size"
+              className="rounded-lg bg-cover"
             />
-            <span className="text-xl font-bold text-primary w-full text-center md:text-left block md:inline-block">
+            <span className="text-xl font-bold text-primary hidden sm:inline">
               Esh Market
             </span>
           </Link>
 
-          {/* Search Bar */}
-          <div className="hidden flex-1 max-w-sm mx-4 md:flex">
+          <div className="hidden md:flex flex-1 max-w-sm mx-4">
             <form onSubmit={handleSearch} className="relative w-full">
               <Input
                 type="text"
@@ -171,18 +169,30 @@ export function Header() {
             </form>
           </div>
 
-          {/* Navigation */}
           <nav className="flex items-center space-x-4">
-            {userInfo ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="hidden sm:inline-flex"
+            >
+              {theme === "dark" ? (
+                <SunIcon className="h-5 w-5" />
+              ) : (
+                <MoonIcon className="h-5 w-5" />
+              )}
+            </Button>
+
+            {isLoggedIn ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-8 w-8 sm:h-10 md:h-12 sm:w-10 md:w-12 rounded-full p-0 overflow-hidden"
+                    className="relative h-8 w-8 rounded-full overflow-hidden"
                   >
                     <Image
                       src={
-                        userInfo.profileImage ||
+                        userInfo?.profileImage ||
                         "https://i.ibb.co/2dh4YL3/nulprofile.jpg"
                       }
                       alt="User Avatar"
@@ -206,7 +216,7 @@ export function Header() {
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </DropdownMenuItem>
-                  {userInfo.isAdmin && (
+                  {userInfo?.isAdmin && (
                     <DropdownMenuItem asChild>
                       <Link href="/admin/dashboard">
                         <LayoutDashboard className="mr-2 h-4 w-4" />
@@ -221,29 +231,91 @@ export function Header() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="md:hidden"
-                  asChild
-                ></Button>
-                <Button
-                  onClick={handleLogin}
-                  className="bg-[#5865F2] hover:bg-[#4752C4] text-white"
-                >
-                  <DiscordLogoIcon className="md:mr-2 h-4 w-4" />
-                  <span className="hidden md:inline">Login</span>
-                </Button>
-              </>
+              <Button
+                onClick={handleLogin}
+                className="bg-[#5865F2] hover:bg-[#4752C4] text-white"
+              >
+                <DiscordLogoIcon className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Login</span>
+              </Button>
             )}
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
           </nav>
         </div>
       </div>
 
-      {/* Search Results */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-background border-t border-border/40 py-4"
+          >
+            <div className="container mx-auto px-4">
+              <form onSubmit={handleSearch} className="mb-4">
+                <Input
+                  type="text"
+                  placeholder="Search products..."
+                  className="w-full"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </form>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="w-full justify-start mb-2"
+              >
+                {theme === "dark" ? (
+                  <SunIcon className="mr-2 h-4 w-4" />
+                ) : (
+                  <MoonIcon className="mr-2 h-4 w-4" />
+                )}
+                {theme === "dark" ? "Light Mode" : "Dark Mode"}
+              </Button>
+              {window.location.pathname !== "/" && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  className="w-full justify-start mb-2"
+                >
+                  <Link href="/">
+                    <Home className="mr-2 h-4 w-4" />
+                    Home
+                  </Link>
+                </Button>
+              )}
+              {userInfo?.isAdmin && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  className="w-full justify-start mb-2"
+                >
+                  <Link href="/admin/dashboard">
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    Dashboard
+                  </Link>
+                </Button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Dialog open={isSearchPopupOpen} onOpenChange={setIsSearchPopupOpen}>
-        <DialogContent className="bg-white">
+        <DialogContent className="bg-background">
           <DialogHeader>
             <DialogTitle>Search Results</DialogTitle>
           </DialogHeader>
@@ -266,7 +338,6 @@ export function Header() {
         </DialogContent>
       </Dialog>
 
-      {/* User Info Dialog */}
       <UserInfoDialog
         isUserInfoOpen={isUserInfoOpen}
         setIsUserInfoOpen={setIsUserInfoOpen}

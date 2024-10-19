@@ -1,6 +1,9 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 import {
   Card,
@@ -9,17 +12,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Package, Users, DollarSign } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Package,
+  Users,
+  DollarSign,
+  Sun,
+  Moon,
+  LogOut,
+  User,
+} from "lucide-react";
 import { IUser } from "@/lib/models/User";
 import AdminGreeting from "@/components/admin-greeting";
-import { useEffect, useState } from "react";
 
 export default function AdminDashboard() {
-  const cardVariants = {
-    hover: { scale: 1.05, transition: { duration: 0.3 } },
-    tap: { scale: 0.95, transition: { duration: 0.3 } },
-  };
   const [userInfo, setUserInfo] = useState<IUser | null>(null);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const userInfoString = localStorage.getItem("userInfo");
@@ -28,18 +42,102 @@ export default function AdminDashboard() {
     }
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/logout");
+      if (response.ok) {
+        localStorage.removeItem("userInfo");
+        window.location.href = "/";
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+    hover: { scale: 1.05, transition: { duration: 0.3 } },
+    tap: { scale: 0.95, transition: { duration: 0.3 } },
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+      <header className="bg-white dark:bg-gray-800 shadow-md">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <Link
+            href="/admin/dashboard"
+            className="text-2xl font-bold text-blue-600 dark:text-blue-400"
+          >
+            Admin Dashboard
+          </Link>
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5" />
+              ) : (
+                <Moon className="h-5 w-5" />
+              )}
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                >
+                  <Image
+                    src={
+                      userInfo?.profileImage ||
+                      "https://i.ibb.co/2dh4YL3/nulprofile.jpg"
+                    }
+                    alt="User Avatar"
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-full"
+                  />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => alert("Profile clicked")}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </header>
       <main className="container mx-auto px-4 py-8">
-        <div className="my-3">
+        <div className="mb-8">
           <AdminGreeting userInfo={userInfo} />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <Link href="/admin/products" className="block">
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          initial="hidden"
+          animate="visible"
+          variants={{
+            visible: {
+              transition: {
+                staggerChildren: 0.1,
+              },
+            },
+          }}
+        >
+          <Link href="/admin/products" passHref>
             <motion.div
+              variants={cardVariants}
               whileHover="hover"
               whileTap="tap"
-              variants={cardVariants}
             >
               <Card className="h-full cursor-pointer transition-shadow hover:shadow-lg">
                 <CardHeader className="text-center">
@@ -61,11 +159,11 @@ export default function AdminDashboard() {
             </motion.div>
           </Link>
 
-          <Link href="/admin/users" className="block">
+          <Link href="/admin/users" passHref>
             <motion.div
+              variants={cardVariants}
               whileHover="hover"
               whileTap="tap"
-              variants={cardVariants}
             >
               <Card className="h-full cursor-pointer transition-shadow hover:shadow-lg">
                 <CardHeader className="text-center">
@@ -86,11 +184,11 @@ export default function AdminDashboard() {
             </motion.div>
           </Link>
 
-          <Link href="/admin/transactions" className="block">
+          <Link href="/admin/transactions" passHref>
             <motion.div
+              variants={cardVariants}
               whileHover="hover"
               whileTap="tap"
-              variants={cardVariants}
             >
               <Card className="h-full cursor-pointer transition-shadow hover:shadow-lg">
                 <CardHeader className="text-center">
@@ -111,7 +209,7 @@ export default function AdminDashboard() {
               </Card>
             </motion.div>
           </Link>
-        </div>
+        </motion.div>
       </main>
     </div>
   );

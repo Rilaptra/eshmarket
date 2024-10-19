@@ -156,6 +156,15 @@ export default function AdminProducts() {
 
   if (error) {
     return <div>Error: {error}</div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        {/* ... previous code remains the same */}
+        {error && (
+          <div className="text-red-600 text-center">Error: {error}</div>
+        )}
+        {/* ... the rest of the component */}
+      </div>
+    );
   }
 
   return (
