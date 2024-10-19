@@ -44,13 +44,22 @@ export interface DiscordWebhookMessage {
   embeds?: DiscordEmbedMessage[];
   username?: "Erzy.sh Market";
   avatar_url?: "https://i.ibb.co/zbqtFBQ/1727490493494.jpg";
-  tts?: boolean;
-  allowed_mentions?: {
-    parse?: string[];
-    roles?: string[];
-    users?: string[];
+}
+
+export interface DiscordWebhookResponse {
+  id: string;
+  type: number;
+  content: string;
+  embeds: DiscordEmbedMessage[];
+  channel_id: string;
+  author: {
+    username: string;
+    id: string;
+    avatar: string;
+    discriminator: string;
+    bot?: boolean;
   };
-  //TODO: Add components for buttons etc.
+  timestamp: string;
 }
 
 const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
@@ -108,9 +117,40 @@ export function colorConverter(color: string | number) {
   }
 }
 
+/**
+ * Sends a message to a Discord webhook using either a string, a DiscordWebhookMessage object, or FormData.
+ *
+ * @param message - The message to send. Can be a string, a DiscordWebhookMessage object, or FormData.
+ * If FormData is provided, it should contain a file and/or an embed.
+ *
+ * @returns A Promise that resolves to the DiscordWebhookResponse object containing the response from Discord.
+ *
+ * @throws Will throw an error if the provided message is invalid or if the request to Discord fails.
+ *
+ * @example
+ * const message: DiscordWebhookMessage = {
+ *   content: "Hello, Discord!",
+ *   embeds: [
+ *     {
+ *       title: "Example Embed",
+ *       description: "This is an example embed.",
+ *       color: "GREEN",
+ *       timestamp: new Date().toISOString(),
+ *     },
+ *   ],
+ * };
+ *
+ * sendDiscordWebhook(message)
+ *   .then((response) => {
+ *     console.log("Message sent successfully:", response);
+ *   })
+ *   .catch((error) => {
+ *     console.error("Failed to send message:", error);
+ *   });
+ */
 export async function sendDiscordWebhook(
   message: string | DiscordWebhookMessage | FormData
-) {
+): Promise<DiscordWebhookResponse> {
   // Check if te message is FormData
   if (message instanceof FormData) {
     const response = await fetch(webhookUrl, {
@@ -123,7 +163,7 @@ export async function sendDiscordWebhook(
       throw new Error(`Failed to send Discord webhook: ${response.status}`);
     }
 
-    return response;
+    return await response.json();
   }
 
   const data: DiscordWebhookMessage =
@@ -159,5 +199,5 @@ export async function sendDiscordWebhook(
     console.error(`Failed to send Discord webhook: ${response.status}`);
     throw new Error(`Failed to send Discord webhook: ${response.status}`);
   }
-  return response;
+  return await response.json();
 }

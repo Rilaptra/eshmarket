@@ -29,6 +29,7 @@ export const metadata: Metadata = {
       url: "https://i.ibb.co/zbqtFBQ/1727490493494.jpg",
       alt: "Erzy.sh Market",
     },
+    url: "https:/eshmarket.vercel.app",
   },
   icons: [
     {

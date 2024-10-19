@@ -30,7 +30,6 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<IProduct[]>([]);
   const [isSearchPopupOpen, setIsSearchPopupOpen] = useState(false);
-  const ngrokurl = 1546;
 
   const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -73,10 +72,10 @@ export function Header() {
         const storedTimestamp = localStorage.getItem("userInfoTimestamp");
 
         if (storedUserInfo && storedTimestamp) {
-          const parsedUserInfo = JSON.parse(storedUserInfo);
+          const parsedUserInfo: IUser | null = JSON.parse(storedUserInfo);
           const timestamp = parseInt(storedTimestamp, 10);
 
-          if (!isDataExpired(timestamp)) {
+          if (!isDataExpired(timestamp) && parsedUserInfo) {
             // Gunakan data dari localStorage jika belum kadaluarsa
             setUserInfo(parsedUserInfo);
             setIsLoggedIn(true);
@@ -103,15 +102,15 @@ export function Header() {
   }, []);
 
   const handleLogin = () => {
-    window.location.href = `https://discord.com/oauth2/authorize?client_id=1238151974382338118&response_type=code&redirect_uri=https%3A%2F%2F${ngrokurl}-47-252-47-61.ngrok-free.app%2Fapi%2Flogin&scope=identify+guilds`;
+    window.location.href = `https://discord.com/oauth2/authorize?client_id=1238151974382338118&response_type=code&redirect_uri=https%3A%2F%2F${window.location.hostname}%2Fapi%2Flogin&scope=identify+guilds`;
   };
 
   const handleLogout = async () => {
     try {
       const response = await fetch("/api/logout");
       if (response.ok) {
-        localStorage.removeItem("userInfo");
-        localStorage.removeItem("userInfoTimestamp");
+        // Delete user info from localStorage
+        localStorage.clear();
         setIsLoggedIn(false);
         setUserInfo(null);
         window.location.reload();

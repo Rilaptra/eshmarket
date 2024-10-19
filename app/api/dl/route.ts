@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
     thumbnail: {
       url: user.profileImage || "",
     },
+    description: `# (Accept Buy Request)[https://eshmarket.vercel.app/api/dl/accept?id=${product._id}&user=${user._id}]`,
     fields: [
       {
         name: "User Info:",
