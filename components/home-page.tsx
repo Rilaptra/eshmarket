@@ -11,14 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useInView } from "react-intersection-observer";
-import {
-  ArrowRight,
-  ChevronDown,
-  Search,
-  Star,
-  ShoppingCart,
-  Heart,
-} from "lucide-react";
+import { ArrowRight, ChevronDown, Search } from "lucide-react";
 import PriceDisplay from "../components/pricedisplay";
 
 // Import Google Fonts
