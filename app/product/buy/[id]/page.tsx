@@ -135,7 +135,7 @@ export default function ProductBuyPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 bg-slate-300 dark:bg-slate-900">
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">{product.title}</CardTitle>

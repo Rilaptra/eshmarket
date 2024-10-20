@@ -32,13 +32,7 @@ export const metadata: Metadata = {
     },
     url: "https:/eshmarket.vercel.app",
   },
-  icons: [
-    {
-      rel: "icon",
-      url: "https://i.ibb.co/zbqtFBQ/1727490493494.jpg",
-      type: "image/jpeg",
-    },
-  ],
+  icons: "https://i.ibb.co/zbqtFBQ/1727490493494.jpg",
 };
 export default function RootLayout({
   children,
@@ -48,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased dark:bg-slate-900 transition dark:text-white`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Header />

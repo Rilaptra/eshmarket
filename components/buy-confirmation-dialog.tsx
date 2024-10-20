@@ -161,7 +161,7 @@ export default function BuyConfirmationDialog({
   const currentStep = steps[step - 1];
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-h-[80vh] rounded-xl overflow-y-auto bg-slate-50 dark:bg-slate-900">
+      <DialogContent className="max-h-[80vh] rounded-xl overflow-y-auto bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100">
         <DialogHeader>
           <DialogTitle>How to Buy Using Diamond Lock</DialogTitle>
           <DialogDescription>

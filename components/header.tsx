@@ -22,7 +22,7 @@ import { Search, User, LogOut, LayoutDashboard, Home } from "lucide-react";
 import { IProduct } from "@/lib/models/Product";
 import ProductLink from "./product-link";
 import { UserInfoDialog } from "./userinfo-dialog";
-import { ThemeToggle } from "./theme-toggle";
+import dynamic from "next/dynamic";
 
 export function Header() {
   const [isUserInfoOpen, setIsUserInfoOpen] = useState(false);
@@ -31,6 +31,13 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<IProduct[]>([]);
   const [isSearchPopupOpen, setIsSearchPopupOpen] = useState(false);
+
+  const ThemeToggle = dynamic(
+    () => import("@/components/theme-toggle").then((mod) => mod.default),
+    {
+      ssr: false,
+    }
+  );
 
   const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
