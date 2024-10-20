@@ -2,8 +2,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useTheme } from "next-themes";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -17,8 +15,6 @@ import {
   ArrowRight,
   ChevronDown,
   Search,
-  Sun,
-  Moon,
   Star,
   ShoppingCart,
   Heart,
@@ -28,6 +24,7 @@ import PriceDisplay from "../components/pricedisplay";
 // Import Google Fonts
 import "@fontsource/poppins";
 import "@fontsource/playfair-display";
+import { Button } from "./ui/button";
 
 interface IProduct {
   _id: string;
@@ -49,7 +46,6 @@ export function HomePageComponent() {
     triggerOnce: true,
     threshold: 0.1,
   });
-  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     async function fetchProducts() {
@@ -134,18 +130,6 @@ export function HomePageComponent() {
           <h1 className="text-2xl font-bold text-purple-600 dark:text-purple-400 font-playfair">
             Erzy.sh Market
           </h1>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            aria-label="Toggle theme"
-          >
-            {theme === "dark" ? (
-              <Sun className="h-5 w-5" />
-            ) : (
-              <Moon className="h-5 w-5" />
-            )}
-          </Button>
         </div>
       </header>
 

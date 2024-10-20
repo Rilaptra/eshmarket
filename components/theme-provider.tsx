@@ -1,13 +1,9 @@
-import type { AppProps } from "next/app";
-import { ThemeProvider } from "next-themes";
-import "../styles/globals.css";
+"use client";
 
-function MyApp({ Component, pageProps }: AppProps) {
-  return (
-    <ThemeProvider attribute="class">
-      <Component {...pageProps} />
-    </ThemeProvider>
-  );
+import * as React from "react";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { type ThemeProviderProps } from "next-themes/dist/types";
+
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }
-
-export default MyApp;

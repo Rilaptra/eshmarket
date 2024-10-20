@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     // Create a response that redirects to the home page
     const response = NextResponse.redirect(
-      new URL("https://d401-47-252-47-61.ngrok-free.app")
+      new URL(`https://${req.headers.get("host")}/`)
     );
 
     // Clear the discord_id cookie

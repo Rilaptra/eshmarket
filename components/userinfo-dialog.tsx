@@ -10,10 +10,9 @@ import {
 } from "@/components/ui/dialog";
 import { IUser } from "@/lib/models/User";
 import Image from "next/image";
-import { User, Coins, FileCode, Server, Shield, Sun, Moon } from "lucide-react";
+import { User, Coins, FileCode, Server, Shield } from "lucide-react";
 import { RpIcon } from "./pricedisplay";
 import DiamondLock from "./diamond-lock";
-import { useTheme } from "next-themes";
 
 // Import Google Fonts
 import "@fontsource/poppins";
@@ -31,7 +30,6 @@ export const UserInfoDialog: React.FC<UserInfoDialogProps> = ({
   userInfo,
 }) => {
   const [activeTab, setActiveTab] = useState("info");
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -45,12 +43,6 @@ export const UserInfoDialog: React.FC<UserInfoDialogProps> = ({
           <DialogTitle className="text-3xl font-bold text-blue-600 dark:text-blue-400 font-playfair mb-4">
             User Profile
           </DialogTitle>
-          <button
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="absolute top-0 right-0 p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 transition-colors duration-200"
-          >
-            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
         </DialogHeader>
         <motion.div
           initial={{ opacity: 0, y: 20 }}

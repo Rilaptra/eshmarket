@@ -24,8 +24,9 @@ export async function GET(request: NextRequest) {
     client_secret: process.env.ClientSecret,
     code,
     grant_type: "authorization_code",
-    redirect_uri: process.env.NGROK_URL + "/api/login",
+    redirect_uri: `https://${request.headers.get("host")}/api/login`,
   });
+  console.log(fetchAuthData);
 
   try {
     const tokenResponse = await fetch(

@@ -72,7 +72,7 @@ const ProductLink: React.FC<ProductLinkProps> = ({
                   size={14}
                   style={{ marginRight: "4px", display: "inline" }}
                 />
-                ${product.price.money}
+                Rp{product.price.money}
               </ProductPrice>
             </ProductInfo>
           </StyledLink>
