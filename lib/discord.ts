@@ -48,18 +48,25 @@ export interface DiscordWebhookMessage {
 
 export interface DiscordWebhookResponse {
   id: string;
-  type: number;
-  content: string;
-  embeds: DiscordEmbedMessage[];
-  channel_id: string;
-  author: {
-    username: string;
-    id: string;
-    avatar: string;
-    discriminator: string;
-    bot?: boolean;
-  };
   timestamp: string;
+}
+
+interface WebhookData {
+  id: string;
+  type: number;
+  guild_id?: string;
+  channel_id: string;
+  name: string;
+  avatar: string | null;
+  token: string;
+  application_id: string | null;
+  url: string;
+}
+
+interface EditWebhookOptions {
+  content?: string;
+  embeds?: DiscordEmbedMessage[];
+  attachments?: File[];
 }
 
 const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
@@ -84,7 +91,7 @@ if (!webhookUrl) {
  * colorConverter(0x0000ff); // Returns 0x0000ff
  * colorConverter("invalid"); // Throws an error
  */
-export function colorConverter(color: string | number) {
+export function colorConverter(color: DiscordEmbedMessage["color"]) {
   if (typeof color === "number") return color;
   if (color.startsWith("#")) return parseInt(color.slice(1), 16);
   switch (color) {
@@ -117,37 +124,6 @@ export function colorConverter(color: string | number) {
   }
 }
 
-/**
- * Sends a message to a Discord webhook using either a string, a DiscordWebhookMessage object, or FormData.
- *
- * @param message - The message to send. Can be a string, a DiscordWebhookMessage object, or FormData.
- * If FormData is provided, it should contain a file and/or an embed.
- *
- * @returns A Promise that resolves to the DiscordWebhookResponse object containing the response from Discord.
- *
- * @throws Will throw an error if the provided message is invalid or if the request to Discord fails.
- *
- * @example
- * const message: DiscordWebhookMessage = {
- *   content: "Hello, Discord!",
- *   embeds: [
- *     {
- *       title: "Example Embed",
- *       description: "This is an example embed.",
- *       color: "GREEN",
- *       timestamp: new Date().toISOString(),
- *     },
- *   ],
- * };
- *
- * sendDiscordWebhook(message)
- *   .then((response) => {
- *     console.log("Message sent successfully:", response);
- *   })
- *   .catch((error) => {
- *     console.error("Failed to send message:", error);
- *   });
- */
 export async function sendDiscordWebhook(
   message: string | DiscordWebhookMessage | FormData
 ): Promise<DiscordWebhookResponse> {
@@ -195,9 +171,124 @@ export async function sendDiscordWebhook(
     },
     body: JSON.stringify(data),
   });
+
   if (!response.ok) {
     console.error(`Failed to send Discord webhook: ${response.status}`);
     throw new Error(`Failed to send Discord webhook: ${response.status}`);
   }
+
   return await response.json();
+}
+
+export async function createDM(userId: string, token: string): Promise<string> {
+  const url = "https://discord.com/api/v10/users/@me/channels";
+  const payload = {
+    recipient_id: userId,
+  };
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bot ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data = await response.json();
+  return data.id; // Mengembalikan DM channel ID
+}
+
+export async function sendMessageWithFileAndEmbed(
+  channelId: string,
+  token: string,
+  file: File
+) {
+  const url = `https://discord.com/api/v10/channels/${channelId}/messages`;
+
+  const formData = new FormData();
+
+  // Menambahkan file ke formData
+  formData.append("file", file, file.name);
+
+  // Menambahkan embed ke formData
+  const payload = {
+    embeds: [
+      {
+        title: "This is an embed",
+        description: "Embed description goes here",
+        color: 3447003,
+      },
+    ],
+  };
+
+  formData.append("payload_json", JSON.stringify(payload));
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bot ${token}`,
+      // Jangan atur Content-Type karena fetch secara otomatis akan mengatur multipart boundary.
+    },
+    body: formData,
+  });
+
+  if (response.ok) {
+    console.log("Message sent successfully with file and embed!");
+  } else {
+    console.error("Error sending message:", response.statusText);
+  }
+}
+
+export async function getWebhook(webhookId: string): Promise<{
+  data: WebhookData;
+  edit: (options: EditWebhookOptions) => Promise<WebhookData>;
+  delete: () => Promise<void>;
+}> {
+  const webhook = `${webhookUrl}/messages/${webhookId}`;
+  const response = await fetch(webhook);
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch webhook: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const data: WebhookData = await response.json();
+
+  const edit = async (options: EditWebhookOptions): Promise<WebhookData> => {
+    const editResponse = await fetch(webhook, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(options),
+    });
+
+    if (!editResponse.ok) {
+      throw new Error(
+        `Failed to edit webhook: ${editResponse.status} ${editResponse.statusText}`
+      );
+    }
+
+    return editResponse.json();
+  };
+
+  const deleteWebhook = async (): Promise<void> => {
+    const deleteResponse = await fetch(webhookUrl, {
+      method: "DELETE",
+    });
+
+    if (!deleteResponse.ok) {
+      throw new Error(
+        `Failed to delete webhook: ${deleteResponse.status} ${deleteResponse.statusText}`
+      );
+    }
+  };
+
+  return {
+    data,
+    edit,
+    delete: deleteWebhook,
+  };
 }

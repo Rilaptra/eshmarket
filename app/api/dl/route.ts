@@ -1,17 +1,22 @@
-import { DiscordEmbedMessage, sendDiscordWebhook } from "@/lib/discord";
+import {
+  DiscordEmbedMessage,
+  createDM,
+  sendDiscordWebhook,
+  sendMessageWithFileAndEmbed,
+} from "@/lib/discord";
 import Product from "@/lib/models/Product";
 import User from "@/lib/models/User";
+import DiscordWebhook from "@/lib/models/Webhook";
 import dbConnect from "@/lib/mongodb";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   await dbConnect();
 
-  // Ambil data dari request formData
   const data = await request.formData();
   const productId = data.get("productId") as string;
   const userId = data.get("userId") as string;
-  const screenrecord = data.get("screenrecord") as File; // File yang akan dikirim
+  const screenrecord = data.get("screenrecord") as File;
 
   const product = await Product.findById(productId);
   if (!product) {
@@ -23,10 +28,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: "User not found" }, { status: 404 });
   }
 
-  // Gunakan FormData untuk mengirim file dan embed
   const formData = new FormData();
-
-  // Tambahkan file ke formData
   formData.append(
     "file",
     screenrecord,
@@ -35,15 +37,18 @@ export async function POST(request: NextRequest) {
       : screenrecord.name
   );
 
-  // Buat embed untuk dimasukkan ke formData
+  const acceptUrl = `https://${request.headers.get("host")}/api/dl?id=${
+    product._id
+  }&user=${user._id}`;
+
   const embed: DiscordEmbedMessage = {
     title: "New Buy Request",
-    color: 0x00ff00, // Warna hijau
+    color: 0x00ff00,
     timestamp: new Date().toISOString(),
     thumbnail: {
       url: user.profileImage || "",
     },
-    description: `# (Accept Buy Request)[https://eshmarket.vercel.app/api/dl/accept?id=${product._id}&user=${user._id}]`,
+    description: `# [Accept Request](${acceptUrl})`,
     fields: [
       {
         name: "User Info:",
@@ -65,17 +70,91 @@ export async function POST(request: NextRequest) {
     ],
   };
 
-  // Tambahkan embed ke formData sebagai payload_json
   formData.append(
     "payload_json",
     JSON.stringify({
       embeds: [embed],
     })
   );
-  // Kirim formData ke Discord webhook
-  await sendDiscordWebhook(formData);
+
+  const webhookResponse = await sendDiscordWebhook(formData);
+  await DiscordWebhook.create({
+    userId: user._id,
+    timestamp: webhookResponse.timestamp,
+    origin: request.headers.get("host") || "localhost",
+    messageid: webhookResponse.id,
+  });
 
   user.scriptBuyed.push(product.title);
-  user.save();
+  await user.save();
+
   return NextResponse.json({ message: "success" }, { status: 200 });
+}
+
+export async function GET(request: NextRequest) {
+  await dbConnect();
+  const searchParams = request.nextUrl.searchParams;
+  const productId = searchParams.get("id");
+  const userId = searchParams.get("user");
+
+  if (!productId || !userId) {
+    return NextResponse.json(
+      { error: "Missing required parameters" },
+      { status: 400 }
+    );
+  }
+
+  const product = await Product.findById(productId);
+  const user = await User.findById(userId);
+
+  if (!product || !user) {
+    return NextResponse.json(
+      { error: "Product or user not found" },
+      { status: 404 }
+    );
+  }
+
+  const webhook = await DiscordWebhook.find({ userId: user._id });
+  if (!webhook) {
+    return NextResponse.json(
+      { error: "No webhook found for this user" },
+      { status: 404 }
+    );
+  }
+
+  const dmChannelId = await createDM(
+    user.discord_id,
+    process.env.DISCORD_TOKEN!
+  );
+  const file = new File([product.content], `${product.title}.lua`, {
+    type: "text/lua",
+  });
+  await sendMessageWithFileAndEmbed(
+    dmChannelId,
+    process.env.DISCORD_TOKEN!,
+    file
+  );
+
+  const updatedEmbed: DiscordEmbedMessage = {
+    title: "Buy Request Accepted",
+    description: `> Buy request with product ${product.title} has been accepted.
+- Buyer: ${user.username} | <@${user.discord_id}> | ${user.discord_id}
+- Product: ${product.title}, ${
+      product.price.dl
+    } <:dl_erzy:1234126544801239040> | Rp ${product.price.money.toLocaleString(
+      "id-ID",
+      { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+    )}
+- Accepted date: ${new Date().toLocaleString("id-ID")} | <t:${Math.floor(
+      Date.now() / 1000
+    )}:R>`,
+    color: "WHITE",
+    timestamp: new Date().toISOString(),
+  };
+
+  await sendDiscordWebhook({
+    embeds: [updatedEmbed],
+  });
+
+  return NextResponse.json({ message: "Accept buy request successful" });
 }
