@@ -26,7 +26,6 @@ export async function GET(request: NextRequest) {
     grant_type: "authorization_code",
     redirect_uri: `https://${request.headers.get("host")}/api/login`,
   });
-  console.log(fetchAuthData);
 
   try {
     const tokenResponse = await fetch(
@@ -115,7 +114,9 @@ export async function GET(request: NextRequest) {
     // Simpan discordId ke cookie
     const discordId = encrypt(`${user.discord_id}`);
 
-    const response = NextResponse.redirect(new URL(process.env.NGROK_URL));
+    const response = NextResponse.redirect(
+      new URL(`https://${request.headers.get("host")}`)
+    );
 
     response.cookies.set("discord_id", discordId, {
       maxAge: 60 * 60 * 24 * 7,
