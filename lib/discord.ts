@@ -164,7 +164,7 @@ export async function sendDiscordWebhook(
       })
     : undefined;
 
-  const response = await fetch(webhookUrl, {
+  const response = await fetch(`${webhookUrl}?wait=true`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -245,7 +245,7 @@ export async function getWebhook(webhookId: string): Promise<{
   edit: (options: EditWebhookOptions) => Promise<WebhookData>;
   delete: () => Promise<void>;
 }> {
-  const webhook = `${webhookUrl}/messages/${webhookId}`;
+  const webhook = `${webhookUrl}/messages/${webhookId}?wait=true`;
   const response = await fetch(webhook);
 
   if (!response.ok) {

@@ -86,6 +86,12 @@ export async function POST(request: NextRequest) {
     messageid: webhookResponse.id,
   });
 
+  const newEmbed: DiscordEmbedMessage = {
+    ...embed,
+    description: `# [Accept Request](${acceptUrl}&webhook=${webhookResponse.id})`,
+  };
+  await (await getWebhook(webhookResponse.id)).edit({ embeds: [newEmbed] });
+
   user.scriptBuyed.push(product.title);
   await user.save();
 
@@ -97,8 +103,9 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const productId = searchParams.get("id");
   const userId = searchParams.get("user");
+  const webhookId = searchParams.get("webhook");
 
-  if (!productId || !userId) {
+  if (!productId || !userId || !webhookId) {
     return NextResponse.json(
       { error: "Missing required parameters" },
       { status: 400 }
@@ -115,7 +122,9 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const webhook = await DiscordWebhook.findOneAndDelete({ userId: user._id });
+  const webhook = await DiscordWebhook.findOneAndDelete({
+    messageid: webhookId,
+  });
   if (!webhook) {
     return NextResponse.json(
       { error: "No webhook found for this user" },
