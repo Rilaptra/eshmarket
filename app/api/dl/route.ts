@@ -1,6 +1,7 @@
 import {
   DiscordEmbedMessage,
   createDM,
+  getWebhook,
   sendDiscordWebhook,
   sendMessageWithFileAndEmbed,
 } from "@/lib/discord";
@@ -114,7 +115,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const webhook = await DiscordWebhook.find({ userId: user._id });
+  const webhook = await DiscordWebhook.findOneAndDelete({ userId: user._id });
   if (!webhook) {
     return NextResponse.json(
       { error: "No webhook found for this user" },
@@ -152,7 +153,9 @@ export async function GET(request: NextRequest) {
     timestamp: new Date().toISOString(),
   };
 
-  await sendDiscordWebhook({
+  await (
+    await getWebhook(webhook.messageid)
+  ).edit({
     embeds: [updatedEmbed],
   });
 
