@@ -142,7 +142,39 @@ export async function GET(request: NextRequest) {
   await sendMessageWithFileAndEmbed(
     dmChannelId,
     process.env.DISCORD_TOKEN!,
-    file
+    file,
+    [
+      {
+        title: product.title,
+        description: product.description,
+        color: "CYAN",
+        timestamp: new Date().toISOString(),
+        fields: [
+          {
+            name: "Product ID:",
+            value: product._id,
+            inline: true,
+          },
+          {
+            name: "Product Price:",
+            value: `- ${
+              product.price.dl
+            } <:dl_erzy:1234126544801239040> | Rp ${product.price.money.toLocaleString(
+              "id-ID",
+              { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+            )}`,
+            inline: true,
+          },
+          {
+            name: "Date:",
+            value: `${new Date().toLocaleString("id-ID")} | <t:${Math.floor(
+              Date.now() / 1000
+            )}:R>`,
+            inline: true,
+          },
+        ],
+      },
+    ]
   );
 
   const updatedEmbed: DiscordEmbedMessage = {
@@ -162,11 +194,7 @@ export async function GET(request: NextRequest) {
     timestamp: new Date().toISOString(),
   };
 
-  await (
-    await getWebhook(webhook.messageid)
-  ).edit({
-    embeds: [updatedEmbed],
-  });
+  await (await getWebhook(webhook.messageid)).edit({ embeds: [updatedEmbed] });
 
   return NextResponse.json({ message: "Accept buy request successful" });
 }

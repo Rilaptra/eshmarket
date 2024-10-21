@@ -202,7 +202,8 @@ export async function createDM(userId: string, token: string): Promise<string> {
 export async function sendMessageWithFileAndEmbed(
   channelId: string,
   token: string,
-  file: File
+  file: File,
+  embed_payload: DiscordEmbedMessage[]
 ) {
   const url = `https://discord.com/api/v10/channels/${channelId}/messages`;
 
@@ -212,17 +213,8 @@ export async function sendMessageWithFileAndEmbed(
   formData.append("file", file, file.name);
 
   // Menambahkan embed ke formData
-  const payload = {
-    embeds: [
-      {
-        title: "This is an embed",
-        description: "Embed description goes here",
-        color: 3447003,
-      },
-    ],
-  };
 
-  formData.append("payload_json", JSON.stringify(payload));
+  formData.append("payload_json", JSON.stringify(embed_payload));
 
   const response = await fetch(url, {
     method: "POST",
