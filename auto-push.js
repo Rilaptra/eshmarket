@@ -1,22 +1,20 @@
 import { execSync } from "child_process";
 
 function main() {
-  const step1 = execSync("git add .");
-  if (!step1) {
-    console.error("Error adding files to git");
-    return;
+  try {
+    execSync("git add .");
+    try {
+      execSync("git commit -m 'auto commit'");
+      try {
+        execSync("git push -u origin main");
+        console.log("Git push completed successfully!");
+      } catch (error) {}
+    } catch (error) {
+      throw new Error("Error committing changes to git");
+    }
+  } catch (error) {
+    throw new Error("Error adding changes to git");
   }
-  const step2 = execSync("git commit -m 'auto commit'");
-  if (!step2) {
-    console.error("Error committing changes to git");
-    return;
-  }
-  const step3 = execSync("git push -u origin main");
-  if (!step3) {
-    console.error("Error pushing changes to git");
-    return;
-  }
-  console.log("Git operations completed successfully!");
 }
 
 main();
