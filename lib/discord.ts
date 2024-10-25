@@ -214,7 +214,7 @@ export async function sendMessageWithFileAndEmbed(
 
   // Menambahkan embed ke formData
 
-  formData.append("payload_json", JSON.stringify(embed_payload));
+  formData.append("payload_json", JSON.stringify({ embeds: embed_payload }));
 
   const response = await fetch(url, {
     method: "POST",
