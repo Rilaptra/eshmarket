@@ -1,12 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb";
 import { URLSearchParams } from "url";
+
+import { NextRequest, NextResponse } from "next/server";
+
 import {
   DiscordOAuthToken,
   DiscordUser,
   DiscordPartialGuild,
 } from "@/lib/interfaces";
 import User from "@/lib/models/User";
+import dbConnect from "@/lib/mongodb";
 import { encrypt } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {

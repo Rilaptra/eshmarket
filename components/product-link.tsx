@@ -1,9 +1,9 @@
-import React from "react";
-import Link from "next/link";
+import styled from "@emotion/styled";
+import * as HoverCard from "@radix-ui/react-hover-card";
 import { motion } from "framer-motion";
 import { ShoppingCart, DollarSign } from "lucide-react";
-import * as HoverCard from "@radix-ui/react-hover-card";
-import styled from "@emotion/styled";
+import Link from "next/link";
+import React from "react";
 
 interface ProductLinkProps {
   product: {

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export function LoadingAnimation() {
   const [progress, setProgress] = useState(0);

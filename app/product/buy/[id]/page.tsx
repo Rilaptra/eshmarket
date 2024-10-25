@@ -1,10 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import Image from "next/image";
 import { motion } from "framer-motion";
+import { ShoppingCart } from "lucide-react";
+import Image from "next/image";
+import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import { FaExclamationTriangle } from "react-icons/fa";
+
+import BuyConfirmationDialog from "@/components/buy-confirmation-dialog";
+import DiamondLock from "@/components/diamond-lock";
+import PriceDisplay from "@/components/pricedisplay";
+import TrakteerModal from "@/components/TrakteerModal";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,13 +19,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ShoppingCart } from "lucide-react";
-import PriceDisplay from "@/components/pricedisplay";
-import BuyConfirmationDialog from "@/components/buy-confirmation-dialog";
-import TrakteerModal from "@/components/TrakteerModal";
-import DiamondLock from "@/components/diamond-lock";
+
+
 
 interface IProduct {
   _id: string;

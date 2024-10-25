@@ -1,7 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, ChevronDown, Search } from "lucide-react";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+
 import {
   Card,
   CardContent,
@@ -10,8 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useInView } from "react-intersection-observer";
-import { ArrowRight, ChevronDown, Search } from "lucide-react";
+
+
 import PriceDisplay from "../components/pricedisplay";
 
 // Import Google Fonts

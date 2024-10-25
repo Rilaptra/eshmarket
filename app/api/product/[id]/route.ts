@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import Product from "@/lib/models/Product";
 
 export async function POST(request: NextRequest) {

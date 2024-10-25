@@ -1,6 +1,7 @@
-import React from "react";
-import { toast } from "@/hooks/use-toast";
 import { CheckCircle, XCircle } from "lucide-react";
+import React from "react";
+
+import { toast } from "@/hooks/use-toast";
 
 export function showToast(success: boolean, message: string) {
   toast({

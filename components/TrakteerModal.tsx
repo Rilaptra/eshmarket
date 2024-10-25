@@ -1,5 +1,7 @@
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,9 +9,9 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import TrakteerButton from "./TrakteerButton";
+
 import { showToast } from "./toast";
+import TrakteerButton from "./TrakteerButton";
 
 interface TrakteerModalProps {
   isOpen: boolean;

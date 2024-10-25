@@ -1,4 +1,5 @@
 import React from "react";
+
 import DiamondLock from "./diamond-lock";
 export function RpIcon() {
   return (

@@ -1,5 +1,6 @@
-import { IUser } from "@/lib/models/User";
 import React from "react";
+
+import { IUser } from "@/lib/models/User";
 
 const AdminGreeting: React.FC<{ userInfo?: IUser | null }> = ({ userInfo }) => {
   const currentDate = new Date();

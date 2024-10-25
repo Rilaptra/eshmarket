@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb"; // adjust the import path as needed
+
 import Product from "@/lib/models/Product";
+import dbConnect from "@/lib/mongodb"; // adjust the import path as needed
 
 export async function GET() {
   await dbConnect();

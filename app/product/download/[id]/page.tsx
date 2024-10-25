@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
@@ -9,7 +11,6 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 
 interface ProductDownload {
   title: string;

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/mongodb"; // adjust the import path as needed
+
 import User from "@/lib/models/User";
+import dbConnect from "@/lib/mongodb"; // adjust the import path as needed
 import { decrypt } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {

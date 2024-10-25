@@ -1,6 +1,9 @@
 "use client";
 
+import { CircleDollarSign, Gem, Link2, PlusCircle } from "lucide-react";
 import { ChangeEvent, FormEvent, useState } from "react";
+
+import { showToast } from "@/components/toast";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,10 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { CircleDollarSign, Gem, Link2, PlusCircle } from "lucide-react";
-import { showToast } from "@/components/toast";
+import { Textarea } from "@/components/ui/textarea";
 
 interface IProduct {
   title: string;

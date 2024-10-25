@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { motion } from "framer-motion";
+import { Package, Users, DollarSign } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+import AdminGreeting from "@/components/admin-greeting";
 import {
   Card,
   CardContent,
@@ -10,9 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Package, Users, DollarSign } from "lucide-react";
 import { IUser } from "@/lib/models/User";
-import AdminGreeting from "@/components/admin-greeting";
 
 export default function AdminDashboard() {
   const [userInfo, setUserInfo] = useState<IUser | null>(null);

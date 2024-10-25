@@ -1,5 +1,6 @@
-import DLIcon from "@/components/dl.svg";
 import Image from "next/image";
+
+import DLIcon from "@/components/dl.svg";
 
 interface DiamondLockProps {
   s: number;

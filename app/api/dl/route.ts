@@ -1,3 +1,5 @@
+import { NextResponse, NextRequest } from "next/server";
+
 import {
   DiscordEmbedMessage,
   createDM,
@@ -9,7 +11,6 @@ import Product from "@/lib/models/Product";
 import User from "@/lib/models/User";
 import DiscordWebhook from "@/lib/models/Webhook";
 import dbConnect from "@/lib/mongodb";
-import { NextResponse, NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   await dbConnect();
@@ -181,6 +182,7 @@ export async function GET(request: NextRequest) {
       },
     ]
   );
+  let embd;
 
   const updatedEmbed: DiscordEmbedMessage = {
     title: "Buy Request Accepted",

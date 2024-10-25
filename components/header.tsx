@@ -1,28 +1,32 @@
 "use client";
-import { useState, useEffect, FormEvent } from "react";
-import Link from "next/link";
+import { DiscordLogoIcon } from "@radix-ui/react-icons";
+import { Search, User, LogOut, LayoutDashboard, Home } from "lucide-react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
+import Link from "next/link";
+import { useState, useEffect, FormEvent } from "react";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { IUser } from "@/lib/models/User";
-import { DiscordLogoIcon } from "@radix-ui/react-icons";
-import { Search, User, LogOut, LayoutDashboard, Home } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import { IProduct } from "@/lib/models/Product";
+import { IUser } from "@/lib/models/User";
+
+
 import ProductLink from "./product-link";
 import { UserInfoDialog } from "./userinfo-dialog";
-import dynamic from "next/dynamic";
+
 
 export function Header() {
   const [isUserInfoOpen, setIsUserInfoOpen] = useState(false);

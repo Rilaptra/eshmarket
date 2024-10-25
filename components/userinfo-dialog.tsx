@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { User, Coins, FileCode, Server, Shield } from "lucide-react";
+import Image from "next/image";
+import { useState, useEffect } from "react";
+
 import {
   Dialog,
   DialogContent,
@@ -9,10 +12,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { IUser } from "@/lib/models/User";
-import Image from "next/image";
-import { User, Coins, FileCode, Server, Shield } from "lucide-react";
-import { RpIcon } from "./pricedisplay";
+
+
 import DiamondLock from "./diamond-lock";
+import { RpIcon } from "./pricedisplay";
 
 // Import Google Fonts
 import "@fontsource/poppins";

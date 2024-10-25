@@ -1,12 +1,14 @@
-import React from "react";
 import { AlertCircle, CheckCircle, Info, XCircle } from "lucide-react";
+import Image from "next/image";
+import React from "react";
+
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import Image from "next/image";
+
 
 type PopUpType = "DEFAULT" | "SUCCESS" | "ERROR" | "WARNING";
 

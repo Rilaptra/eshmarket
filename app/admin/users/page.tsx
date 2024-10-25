@@ -1,6 +1,14 @@
 "use client";
 
+import { MoreVertical, UserCog, UserMinus } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect } from "react";
+
+import DiamondLock from "@/components/diamond-lock";
+import PriceDisplay from "@/components/pricedisplay";
+import { showToast } from "@/components/toast";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,20 +16,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, UserCog, UserMinus } from "lucide-react";
-import Link from "next/link";
-import { showToast } from "@/components/toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import Image from "next/image";
-import DiamondLock from "@/components/diamond-lock";
-import PriceDisplay from "@/components/pricedisplay";
 
 interface IUser {
   _id: string;
