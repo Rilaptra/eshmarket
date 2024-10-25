@@ -375,7 +375,7 @@ export default function AdminProducts() {
                 <div className="col-span-3">
                   <Textarea
                     id="content"
-                    value={editingProduct.content}
+                    value={editingProduct.content.length > 100? `${editingProduct.content.slice(0,100)}...` : editingProduct.content}
                     onChange={(e) =>
                       setEditingProduct({
                         ...editingProduct,
