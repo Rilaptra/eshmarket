@@ -182,7 +182,6 @@ export async function GET(request: NextRequest) {
       },
     ]
   );
-  let embd;
 
   const updatedEmbed: DiscordEmbedMessage = {
     title: "Buy Request Accepted",
