@@ -85,6 +85,7 @@ export async function POST(request: NextRequest) {
     origin: request.headers.get("host") || "localhost",
     messageid: webhookResponse.id,
   });
+  console.log(webhookResponse.id);
 
   const newEmbed: DiscordEmbedMessage = {
     ...embed,
@@ -122,8 +123,9 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const webhook = await DiscordWebhook.findOneAndDelete({
+  const webhook = await DiscordWebhook.findOne({
     messageid: webhookId,
+    userId: user._id,
   });
   if (!webhook) {
     return NextResponse.json(
@@ -146,7 +148,10 @@ export async function GET(request: NextRequest) {
     [
       {
         title: product.title,
-        description: product.description,
+        description:
+          product.description.length > 1024
+            ? `${product.description.slice(0, 1024)}...`
+            : product.description,
         color: "CYAN",
         timestamp: new Date().toISOString(),
         fields: [
@@ -192,9 +197,17 @@ export async function GET(request: NextRequest) {
     )}:R>`,
     color: "WHITE",
     timestamp: new Date().toISOString(),
+    thumbnail: {
+      url: user.profileImage || "",
+    },
+    fields: [],
   };
+  const webhMsg = await getWebhook(webhook.messageid);
 
-  await (await getWebhook(webhook.messageid)).edit({ embeds: [updatedEmbed] });
+  await webhMsg.edit({
+    embeds: [updatedEmbed],
+    attachments: [],
+  });
 
   return NextResponse.json({ message: "Accept buy request successful" });
 }

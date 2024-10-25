@@ -213,6 +213,12 @@ export async function sendMessageWithFileAndEmbed(
   formData.append("file", file, file.name);
 
   // Menambahkan embed ke formData
+  embed_payload = embed_payload.map((embed) => {
+    if (embed.color) {
+      embed.color = colorConverter(embed.color);
+    }
+    return embed;
+  });
 
   formData.append("payload_json", JSON.stringify({ embeds: embed_payload }));
 
@@ -229,6 +235,7 @@ export async function sendMessageWithFileAndEmbed(
     console.log("Message sent successfully with file and embed!");
   } else {
     console.error("Error sending message:", response.statusText);
+    console.error("Response:", response);
   }
 }
 
@@ -249,21 +256,35 @@ export async function getWebhook(webhookId: string): Promise<{
   const data: WebhookData = await response.json();
 
   const edit = async (options: EditWebhookOptions): Promise<WebhookData> => {
-    const editResponse = await fetch(webhook, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(options),
+    options.embeds = options.embeds?.map((embed) => {
+      if (embed.color) {
+        embed.color = colorConverter(embed.color);
+      }
+      return embed;
     });
 
-    if (!editResponse.ok) {
-      throw new Error(
-        `Failed to edit webhook: ${editResponse.status} ${editResponse.statusText}`
-      );
-    }
+    try {
+      const editResponse = await fetch(webhook, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(options),
+      });
 
-    return editResponse.json();
+      if (!editResponse.ok) {
+        const errorText = await editResponse.text();
+        console.error("Error response:", errorText);
+        throw new Error(
+          `Failed to edit webhook: ${editResponse.status} ${editResponse.statusText}\n${errorText}`
+        );
+      }
+
+      return editResponse.json();
+    } catch (error) {
+      console.error("Error editing webhook:", error);
+      throw error;
+    }
   };
 
   const deleteWebhook = async (): Promise<void> => {
