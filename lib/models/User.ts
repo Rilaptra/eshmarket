@@ -7,7 +7,7 @@ export interface IGuild {
 export interface IUser extends Document {
   username: string;
   profileImage: string;
-  role: string;
+  role: "Admin" | "User";
   isAdmin: boolean;
   discord_id: string;
   guilds?: Array<IGuild> | null;

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import Product from "@/lib/models/Product";
+import dbConnect from "@/lib/mongodb";
+import User from "@/lib/models/User";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -52,7 +54,38 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  await dbConnect();
+
   const id = params.id;
+  const headers = request.headers;
+  const userId = headers.get("user-id");
+  if (!id) return NextResponse.json({ error: "Invalid ID!" }, { status: 403 });
+  if (!userId)
+    return NextResponse.json({ error: "Invalid User!" }, { status: 403 });
+  const user = await User.findById(userId);
+  if (!user)
+    return NextResponse.json({ error: "User Not Found!" }, { status: 404 });
+
+  const query = request.nextUrl.searchParams;
+  if (query.get("getAll") === "true") {
+    const product = await Product.findById(id);
+    if (!product) {
+      return NextResponse.json({ status: 404, message: "Product not found" });
+    }
+
+    if (
+      !user.isAdmin ||
+      user.role !== "Admin" ||
+      !user.scriptBuyed.find((script) => script === product.title)
+    ) {
+      return NextResponse.json(
+        { error: "You don't have permission" },
+        { status: 401 }
+      );
+    }
+
+    return NextResponse.json(product);
+  }
 
   try {
     const product = await Product.findOne({ _id: id });
@@ -61,7 +94,7 @@ export async function GET(
       return NextResponse.json({ status: 404, message: "Product not found" });
     }
 
-    return NextResponse.json(product);
+    return NextResponse.json({ title: product.title, price: product.price });
   } catch (error) {
     console.error("Error fetching product:", error);
     return NextResponse.json({
