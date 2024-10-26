@@ -20,7 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-
+import { ShowPopUp } from "@/components/ShowPopUp";
 
 
 interface IProduct {
@@ -63,11 +63,22 @@ export default function ProductBuyPage() {
     };
 
     fetchProduct();
+
+    // Check if user is logged in
+    const userInfo = localStorage.getItem("userInfo");
+    setIsLoggedIn(!!userInfo);
   }, [id]);
 
-  // Handle buying with method Trakteer
-  const handleBuyWithTrakteer = () => {
-    setShowTrakteerModal(true);
+  const handlePurchaseClick = (type: 'dl' | 'trakteer') => {
+    if (!isLoggedIn) {
+      setIsLoginPopupOpen(true);
+    } else {
+      if (type === 'dl') {
+        setIsBuyDialogOpen(true);
+      } else {
+        setShowTrakteerModal(true);
+      }
+    }
   };
 
   const SkeletonLoader = () => (
@@ -187,7 +198,7 @@ export default function ProductBuyPage() {
         <CardFooter className="flex flex-col sm:flex-row justify-between gap-4">
           <Button
             className="w-full flex items-center justify-center text-center px-2 py-3 text-sm sm:text-base"
-            onClick={() => setIsBuyDialogOpen(true)}
+            onClick={() => handlePurchaseClick('dl')}
           >
             <ShoppingCart className="w-4 h-4 mr-2 flex-shrink-0" />
             <span className="whitespace-normal">Purchase (Diamond Lock)</span>
@@ -201,7 +212,7 @@ export default function ProductBuyPage() {
           <Button
             variant="outline"
             className="w-full flex items-center justify-center text-center px-2 py-3 text-sm sm:text-base"
-            onClick={handleBuyWithTrakteer}
+            onClick={() => handlePurchaseClick('trakteer')}
           >
             <ShoppingCart className="w-4 h-4 mr-2 flex-shrink-0" />
             <span className="whitespace-normal">Purchase (Trakteer)</span>
@@ -217,6 +228,21 @@ export default function ProductBuyPage() {
           price={product.price.money}
         />
       )}
+      <ShowPopUp
+        type="WARNING"
+        title="Login Required"
+        message="Please log in to make a purchase."
+        action={
+          <Button
+            onClick={() => setIsLoginPopupOpen(false)}
+            className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+          >
+            Close
+          </Button>
+        }
+        isOpen={isLoginPopupOpen}
+        onClose={() => setIsLoginPopupOpen(false)}
+      />
     </div>
   );
 }
