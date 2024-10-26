@@ -20,7 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ShowPopUp } from "@/components/ShowPopUp";
+import { ShowPopUp } from "@/components/showPopUp";
 
 
 interface IProduct {
