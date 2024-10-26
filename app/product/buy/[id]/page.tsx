@@ -41,6 +41,7 @@ export default function ProductBuyPage() {
   const [loading, setLoading] = useState(true);
   const [showTrakteerModal, setShowTrakteerModal] = useState(false);
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
+  const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
   useEffect(() => {
