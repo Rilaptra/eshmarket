@@ -40,20 +40,23 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Check if there's a recent donation matching the product price
-    const recentDonation = await Donation.findOne({
-      supporterName: user.username,
-      amount: product.price.money,
-      createdAt: { $gte: new Date(Date.now() - 1000 * 60 * 10) }, // Within the last 10 minutes
-    })
-      .sort({ createdAt: -1 })
-      .limit(1);
+    // Check if the user has enough balance
+    if (user.balance.money < product.price.money) {
+      // Check if there's a recent donation matching the product price
+      const recentDonation = await Donation.findOne({
+        supporterName: user.username,
+        amount: product.price.money,
+        createdAt: { $gte: new Date(Date.now() - 1000 * 60 * 10) }, // Within the last 10 minutes
+      })
+        .sort({ createdAt: -1 })
+        .limit(1);
 
-    if (!recentDonation) {
-      return NextResponse.json(
-        { success: false, message: "No matching recent donation found" },
-        { status: 400 }
-      );
+      if (!recentDonation) {
+        return NextResponse.json(
+          { success: false, message: "No matching recent donation found" },
+          { status: 400 }
+        );
+      }
     }
 
     // Update user's balance and purchased scripts
