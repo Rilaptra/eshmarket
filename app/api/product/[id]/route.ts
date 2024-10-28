@@ -94,7 +94,13 @@ export async function GET(
       return NextResponse.json({ status: 404, message: "Product not found" });
     }
 
-    return NextResponse.json({ title: product.title, price: product.price });
+    return NextResponse.json({
+      title: product.title,
+      price: product.price,
+      _id: product._id,
+      description: product.description,
+      showcaseLink: product.showcaseLink,
+    });
   } catch (error) {
     console.error("Error fetching product:", error);
     return NextResponse.json({
