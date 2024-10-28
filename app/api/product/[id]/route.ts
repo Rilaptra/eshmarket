@@ -57,17 +57,18 @@ export async function GET(
   await dbConnect();
 
   const id = params.id;
-  const headers = request.headers;
-  const userId = headers.get("user-id");
   if (!id) return NextResponse.json({ error: "Invalid ID!" }, { status: 403 });
-  if (!userId)
-    return NextResponse.json({ error: "Invalid User!" }, { status: 403 });
-  const user = await User.findById(userId);
-  if (!user)
-    return NextResponse.json({ error: "User Not Found!" }, { status: 404 });
 
   const query = request.nextUrl.searchParams;
   if (query.get("getAll") === "true") {
+    const headers = request.headers;
+    const userId = headers.get("user-id");
+    if (!userId)
+      return NextResponse.json({ error: "Invalid User!" }, { status: 403 });
+    const user = await User.findById(userId);
+    if (!user)
+      return NextResponse.json({ error: "User Not Found!" }, { status: 404 });
+
     const product = await Product.findById(id);
     if (!product) {
       return NextResponse.json({ status: 404, message: "Product not found" });
