@@ -41,7 +41,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-
 export interface IProduct {
   _id: string;
   title: string;
@@ -228,7 +227,7 @@ export default function AdminProducts() {
                 <Button
                   className="w-full"
                   onClick={() => {
-                    const blob = new Blob([product.content.slice(0, 100)], {
+                    const blob = new Blob([product.content], {
                       type: "text/plain",
                     });
                     const url = URL.createObjectURL(blob);
@@ -375,7 +374,11 @@ export default function AdminProducts() {
                 <div className="col-span-3">
                   <Textarea
                     id="content"
-                    value={editingProduct.content.length > 100? `${editingProduct.content.slice(0,100)}...` : editingProduct.content}
+                    value={
+                      editingProduct.content.length > 100
+                        ? `${editingProduct.content.slice(0, 100)}...`
+                        : editingProduct.content
+                    }
                     onChange={(e) =>
                       setEditingProduct({
                         ...editingProduct,
